@@ -1,0 +1,33 @@
+
+# Dependências / builds (se usar Node tooling)
+node_modules/
+dist/
+build/
+.cache/
+.tmp/
+
+# Logs
+*.log
+logs/
+
+# Secrets / configs locais
+.env
+.env.*
+
+# SO / editores
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Outputs eventuais
+*.zip
+
+# Bastidores / fontes (evita expor backstage)
+prompts/
+*.psd
+*.ai
+*.cdr
+*.pdf
