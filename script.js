@@ -1,31 +1,40 @@
 const CONFIG = {
   WHATSAPP_PHONE_E164: "5511952516867",
-  CITY: "São Paulo – SP",
-  CTA_PRIMARY: "Solicitar avaliação técnica",
-  CTA_SECONDARY: "Falar no WhatsApp",
+  CITY: "Itaim Bibi, São Paulo – SP",
+  ADDRESS: "Av. Brig. Faria Lima, 3900 - 7º andar - Itaim Bibi, São Paulo - SP",
+  CTA_PRIMARY: "Solicitar agendamento",
+  CTA_SECONDARY: "Falar por WhatsApp",
   FORM_ENDPOINT_URL: "FORM_ENDPOINT_URL",
+  // Cards exibidos na seção "Procedimentos em foco"
   PROCEDURES: [
     {
-      title: "Aumento de mama",
+      title: "Mamoplastia de aumento",
       description:
-        "Indicação criteriosa, foco em segurança e previsibilidade para um resultado harmonioso.",
+        "Indicação individual e planejamento preciso para harmonia, segurança e previsibilidade.",
     },
     {
       title: "Mastopexia (com ou sem prótese)",
       description:
-        "Levantamento e reestruturação com planejamento técnico, respeitando anatomia e objetivos.",
+        "Levantamento e reestruturação com planejamento técnico e cuidado estético.",
     },
     {
-      title: "Revisão mamária",
+      title: "Cirurgia mamária secundária (revisões)",
       description:
-        "Secondary breast surgery para corrigir insatisfações, contraturas ou ptose recidivada.",
+        "Para corrigir ou refinar aspectos insatisfatórios de cirurgias prévias, com critérios técnicos.",
     },
   ],
-  PROCEDURE_SECONDARY: {
-    title: "Explante",
-    description:
-      "quando aplicável, como prova de competência e responsabilidade técnica.",
-  },
+  // Opções do dropdown (campo opcional)
+  INTEREST_OPTIONS: [
+    "Mamoplastia de aumento",
+    "Mastopexia",
+    "Contratura capsular",
+    "Revisão de cirurgia prévia",
+    "Abdominoplastia / Lipoescultura",
+    "Face",
+    "Procedimentos",
+    "Outros",
+    "não informado",
+  ],
 };
 
 const whatsappRegex = /^(\+?55)?\s*(\(?\d{2}\)?)?\s*9?\d{4}[-\s]?\d{4}$/;
@@ -58,6 +67,7 @@ const setTextContent = (selector, value) => {
 
 const initConfigText = () => {
   setTextContent('[data-config="city"]', CONFIG.CITY);
+  setTextContent('[data-config="address"]', CONFIG.ADDRESS);
   setTextContent('[data-cta="primary"]', CONFIG.CTA_PRIMARY);
   setTextContent('[data-cta="secondary"]', CONFIG.CTA_SECONDARY);
 };
@@ -82,34 +92,31 @@ const initProcedures = () => {
 const initProcedureSelect = () => {
   const select = document.getElementById("interesse");
   if (!select) return;
+
+  // Campo opcional: "não informado" como padrão.
   select.innerHTML = "";
 
-  const placeholder = document.createElement("option");
-  placeholder.value = "";
-  placeholder.textContent = "Selecione um procedimento";
-  placeholder.disabled = true;
-  placeholder.selected = true;
-  select.appendChild(placeholder);
+  const opt0 = document.createElement("option");
+  opt0.value = "";
+  opt0.textContent = "não informado";
+  opt0.selected = true;
+  select.appendChild(opt0);
 
-  CONFIG.PROCEDURES.forEach((procedure) => {
+  CONFIG.INTEREST_OPTIONS.forEach((label) => {
+    // evita duplicar o "não informado" (já existe como opt0)
+    if (label === "não informado") return;
     const option = document.createElement("option");
-    option.value = procedure.title;
-    option.textContent = procedure.title;
+    option.value = label;
+    option.textContent = label;
     select.appendChild(option);
   });
-
-  const secondary = document.createElement("option");
-  secondary.value = CONFIG.PROCEDURE_SECONDARY.title;
-  secondary.textContent = `${CONFIG.PROCEDURE_SECONDARY.title} (quando aplicável)`;
-  select.appendChild(secondary);
 };
 
-const initSecondaryProcedure = () => {
-  const title = document.querySelector("[data-secondary-title]");
-  const description = document.querySelector("[data-secondary-description]");
-  if (!title || !description) return;
-  title.textContent = CONFIG.PROCEDURE_SECONDARY.title;
-  description.textContent = CONFIG.PROCEDURE_SECONDARY.description;
+const initMapEmbed = () => {
+  const iframe = document.querySelector("[data-map]");
+  if (!iframe) return;
+  const query = encodeURIComponent(CONFIG.ADDRESS);
+  iframe.src = `https://www.google.com/maps?q=${query}&output=embed`;
 };
 
 const initWhatsAppLinks = () => {
@@ -180,7 +187,8 @@ const setupForm = () => {
       nome: form.nome.value.trim(),
       whatsapp: form.whatsapp.value.trim(),
       email: form.email.value.trim(),
-      interesse: form.interesse.value,
+      // Campo opcional: pode vir vazio ("") = não informado
+      interesse: (form.interesse && form.interesse.value) ? form.interesse.value : "",
       mensagem: form.mensagem.value.trim(),
       consentimento: form.consentimento.checked,
     };
@@ -199,11 +207,7 @@ const setupForm = () => {
       return;
     }
 
-    if (!data.interesse) {
-      form.interesse.setAttribute("aria-invalid", "true");
-      setStatus("Selecione um procedimento.", true);
-      return;
-    }
+    // interesse agora é opcional: sem validação obrigatória.
 
     if (!data.consentimento) {
       form.consentimento.setAttribute("aria-invalid", "true");
@@ -211,16 +215,16 @@ const setupForm = () => {
       return;
     }
 
-    const fallbackMessage = [
-      "Olá, gostaria de solicitar avaliação técnica.",
+    const fallbackLines = [
+      `Olá, gostaria de ${CONFIG.CTA_PRIMARY.toLowerCase()}.`,
       `Nome: ${data.nome}`,
       `WhatsApp: ${data.whatsapp}`,
-      `Interesse: ${data.interesse}`,
+      data.interesse ? `Procedimento: ${data.interesse}` : null,
       data.email ? `E-mail: ${data.email}` : null,
       data.mensagem ? `Mensagem: ${data.mensagem}` : null,
-    ]
-      .filter(Boolean)
-      .join("\n");
+    ].filter(Boolean);
+
+    const fallbackMessage = fallbackLines.join("\n");
 
     const endpointReady =
       CONFIG.FORM_ENDPOINT_URL &&
@@ -254,7 +258,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initConfigText();
   initProcedures();
   initProcedureSelect();
-  initSecondaryProcedure();
+  initMapEmbed();
   initWhatsAppLinks();
   setupAccordion();
   setupReveal();

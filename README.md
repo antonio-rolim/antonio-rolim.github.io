@@ -12,6 +12,7 @@ Edite em `script.js`:
 - `WHATSAPP_PHONE_E164`: telefone no formato E.164.
 - `CTA_PRIMARY` e `CTA_SECONDARY`: textos dos CTAs.
 - `CITY`: localidade exibida.
+- `ADDRESS`: endereço completo usado no rodapé e no mapa.
 - `FORM_ENDPOINT_URL`: URL do endpoint do formulário (placeholder por padrão).
 - `PROCEDURES`: lista de procedimentos e descrições.
 

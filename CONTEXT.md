@@ -35,6 +35,12 @@ Construir uma landing page premium (dark mode) para converter tráfego de alta i
 - Você NÃO é “colocador de prótese”; é **reconstrutor de mama**.
 - Mercado de “silicone simples” = guerra de preço; o high ticket de mama busca **segurança, longevidade e resolução de problemas**.:contentReference[oaicite:6]{index=6}
 
+### Tom e linguagem (diretriz)
+- Tom técnico, intelectual e de autoridade, com foco em indicação individual, planejamento cirúrgico e previsibilidade.
+- Linguagem direta e precisa (menos “concierge/luxo suave”, mais clareza e critério).
+- Reforçar formação, credenciais e atuação em alta complexidade quando relevante.
+- Evitar frases que enfatizem “sem promessas” ou “não garantimos resultado”; manter isso implícito.
+
 ---
 
 ## 3) Público-alvo (ICP) — para quem é
@@ -74,7 +80,7 @@ Mulheres 35–50 anos (frequentemente pós-maternidade) e/ou com histórico de c
 - WhatsApp (CTA fixo + CTA no hero + CTA no final)
 
 ### Conversão secundária
-- Formulário curto (nome + WhatsApp + interesse) com fallback para WhatsApp
+- Formulário curto (nome + WhatsApp + e-mail opcional + procedimento opcional) com fallback para WhatsApp
 
 ### Consulta como “entrada do funil”
 - Consulta paga serve para qualificar e amortizar custos (sala/ads), não precisa “dar lucro isolado”. (Conceito interno do MUC; não explicitar na página.)
@@ -87,17 +93,17 @@ Mulheres 35–50 anos (frequentemente pós-maternidade) e/ou com histórico de c
 
 ## 6) Estrutura recomendada da Landing Page (macro)
 ### Dobra 1 — HERO (impacto)
-- Headline com rigor / segurança (sem prometer resultado)
-- Subheadline com “protocolos/engenharia/reconstrução aplicada”
-- CTA: **“Solicitar avaliação técnica”** (luxo = convite, não urgência).:contentReference[oaicite:9]{index=9}
+- Headline com rigor técnico, precisão e previsibilidade
+- Subheadline com “indicação individual/planejamento cirúrgico/acompanhamento”
+- CTA: **“Solicitar agendamento”** (luxo = convite, não urgência).:contentReference[oaicite:9]{index=9}
 - Visual: dark premium, minimalista; sem fotos stock “mulher com fita métrica”.:contentReference[oaicite:10]{index=10}
 
 ### Dobra 2 — Autoridade (curta, objetiva)
-- Mini-bio + credenciais + áreas (mama)
+- Mini-bio + credenciais (UNICAMP, HC-USP/microcirurgia reconstrutiva) + áreas (mama)
 - Linguagem do “perito”: direta, sem floreio.
 
 ### Dobra 3 — Método (3 passos)
-- Avaliação → Planejamento → Acompanhamento
+- Avaliação e planejamento → Cirurgia → Acompanhamento
 - Ícones minimalistas dourados.:contentReference[oaicite:11]{index=11}
 
 ### Dobra 4 — Procedimentos (mama)
@@ -107,16 +113,17 @@ Mulheres 35–50 anos (frequentemente pós-maternidade) e/ou com histórico de c
 ### Dobra 5 — FAQ (10 perguntas)
 - Acordeão acessível; respostas curtas
 - 1 pergunta sobre valores (variabilidade por caso; discutido após avaliação)
+- Incluir valor da primeira consulta: **R$ 1.200,00**
 
 ### Dobra final — CTA + Rodapé
-- CTA final: “Solicitar avaliação técnica”
-- Rodapé com contato, localidade (São Paulo – SP), links (privacy)
+- CTA final: “Solicitar agendamento”
+- Rodapé com contato, localidade (Itaim Bibi, São Paulo – SP), links (privacy)
 
 ---
 
 ## 7) Microcopy de CTA (evitar “efeito Polishop”)
 - Evitar: “AGENDE AGORA”, “ÚLTIMAS VAGAS”, “COMPRE”
-- Preferir: “Solicitar agendamento”, “Entrar em contato com a equipe”, “Solicitar avaliação técnica”
+- Preferir: “Solicitar agendamento”, “Entrar em contato com a equipe”, “Falar por WhatsApp”
 - Design do CTA:
   - ghost button dourado (contorno fino) ou
   - dourado fosco sólido com tipografia sóbria
@@ -159,8 +166,8 @@ Se atendendo em coworking premium (ex.: Atria/B32), reduzir fricção percebida:
 
 ## 11) Configurações rápidas (para o dev/Codex)
 - `WHATSAPP_PHONE_E164 = "5511952516867"`
-- `PRIMARY_FOCUS = ["Aumento de mama", "Mastopexia", "Revisão mamária"]`
-- `CITY = "São Paulo – SP"`
+- `PRIMARY_FOCUS = ["Mamoplastia de aumento", "Mastopexia", "Cirurgia mamária secundária (revisões)"]`
+- `CITY = "Itaim Bibi, São Paulo – SP"`
 - `ADRESS = "Av. Brig. Faria Lima, 3900 - 7º andar - Itaim Bibi, São Paulo - SP"`
-- `CTA_PRIMARY = "Solicitar avaliação técnica"`
-- `CTA_SECONDARY = "Falar no WhatsApp"`
+- `CTA_PRIMARY = "Solicitar agendamento"`
+- `CTA_SECONDARY = "Falar por WhatsApp"`
