@@ -4,7 +4,21 @@ const CONFIG = {
   ADDRESS: "Av. Brig. Faria Lima, 3900 - 7º andar - Itaim Bibi, São Paulo - SP",
   CTA_PRIMARY: "Solicitar agendamento",
   CTA_SECONDARY: "Falar por WhatsApp",
-  FORM_ENDPOINT_URL: "FORM_ENDPOINT_URL",
+
+  /**
+   * URL do Google Apps Script (Web App) que envia e-mail via Google Workspace.
+   * Cole aqui a URL gerada em: Implantar → App da web.
+   *
+   * Exemplo: https://script.google.com/macros/s/AKfycb.../exec
+   */
+  FORM_ACTION_URL: "https://script.google.com/macros/s/AKfycby3yapzrTpuT_5e6aN-NGPAkn_N-hNwWwHQ-1D7pocqHlQ2DR-egslBCg_KcIyJlFlqag/exec",
+
+  /**
+   * Token simples anti-abuso (deve bater com o TOKEN no Apps Script).
+   * Use um token forte (20–40 chars). Ex.: gerador de senhas.
+   */
+  FORM_TOKEN: "Adfifgjq3gnqiegnh0q#%!gwgmi4tg",
+
   // Cards exibidos na seção "Procedimentos em foco"
   PROCEDURES: [
     {
@@ -23,6 +37,7 @@ const CONFIG = {
         "Para corrigir ou refinar aspectos insatisfatórios de cirurgias prévias, com critérios técnicos.",
     },
   ],
+
   // Opções do dropdown (campo opcional)
   INTEREST_OPTIONS: [
     "Mamoplastia de aumento",
@@ -42,21 +57,6 @@ const whatsappRegex = /^(\+?55)?\s*(\(?\d{2}\)?)?\s*9?\d{4}[-\s]?\d{4}$/;
 const buildWhatsAppLink = (message) => {
   const encoded = encodeURIComponent(message);
   return `https://wa.me/${CONFIG.WHATSAPP_PHONE_E164}?text=${encoded}`;
-};
-
-const openWhatsApp = (message, redirectUrl) => {
-  const url = buildWhatsAppLink(message);
-  const opened = window.open(url, "_blank");
-  if (opened) {
-    opened.opener = null;
-  }
-  if (!opened) {
-    window.location.href = url;
-    return;
-  }
-  if (redirectUrl) {
-    window.location.href = redirectUrl;
-  }
 };
 
 const setTextContent = (selector, value) => {
@@ -93,7 +93,6 @@ const initProcedureSelect = () => {
   const select = document.getElementById("interesse");
   if (!select) return;
 
-  // Campo opcional: "não informado" como padrão.
   select.innerHTML = "";
 
   const opt0 = document.createElement("option");
@@ -103,7 +102,6 @@ const initProcedureSelect = () => {
   select.appendChild(opt0);
 
   CONFIG.INTEREST_OPTIONS.forEach((label) => {
-    // evita duplicar o "não informado" (já existe como opt0)
     if (label === "não informado") return;
     const option = document.createElement("option");
     option.value = label;
@@ -138,9 +136,7 @@ const setupAccordion = () => {
       const expanded = trigger.getAttribute("aria-expanded") === "true";
       const panel = document.getElementById(trigger.getAttribute("aria-controls"));
       trigger.setAttribute("aria-expanded", String(!expanded));
-      if (panel) {
-        panel.style.maxHeight = !expanded ? `${panel.scrollHeight}px` : "0";
-      }
+      if (panel) panel.style.maxHeight = !expanded ? `${panel.scrollHeight}px` : "0";
     });
   });
 };
@@ -167,90 +163,78 @@ const setupReveal = () => {
   elements.forEach((el) => observer.observe(el));
 };
 
+const ensureHidden = (form, name, value) => {
+  let input = form.querySelector(`input[name="${name}"]`);
+  if (!input) {
+    input = document.createElement("input");
+    input.type = "hidden";
+    input.name = name;
+    form.appendChild(input);
+  }
+  input.value = value;
+};
+
 const setupForm = () => {
   const form = document.getElementById("lead-form");
   if (!form) return;
   const status = form.querySelector(".form-status");
+  const submitBtn = form.querySelector('button[type="submit"]');
 
   const setStatus = (message, isError = false) => {
     status.textContent = message;
     status.style.color = isError ? "#b34b3c" : "";
   };
 
-  const resetStatus = () => setStatus("");
-
-  form.addEventListener("submit", async (event) => {
+  form.addEventListener("submit", (event) => {
     event.preventDefault();
-    resetStatus();
 
-    const data = {
-      nome: form.nome.value.trim(),
-      whatsapp: form.whatsapp.value.trim(),
-      email: form.email.value.trim(),
-      // Campo opcional: pode vir vazio ("") = não informado
-      interesse: (form.interesse && form.interesse.value) ? form.interesse.value : "",
-      mensagem: form.mensagem.value.trim(),
-      consentimento: form.consentimento.checked,
-    };
+    const nome = form.nome.value.trim();
+    const whatsapp = form.whatsapp.value.trim();
+    const consent = form.consentimento.checked;
 
     form.querySelectorAll("[aria-invalid]").forEach((el) => el.removeAttribute("aria-invalid"));
 
-    if (!data.nome) {
+    if (!nome) {
       form.nome.setAttribute("aria-invalid", "true");
       setStatus("Informe seu nome.", true);
       return;
     }
 
-    if (!data.whatsapp || !whatsappRegex.test(data.whatsapp)) {
+    if (!whatsapp || !whatsappRegex.test(whatsapp)) {
       form.whatsapp.setAttribute("aria-invalid", "true");
       setStatus("Informe um WhatsApp válido.", true);
       return;
     }
 
-    // interesse agora é opcional: sem validação obrigatória.
-
-    if (!data.consentimento) {
+    if (!consent) {
       form.consentimento.setAttribute("aria-invalid", "true");
       setStatus("É necessário concordar com a política de privacidade.", true);
       return;
     }
 
-    const fallbackLines = [
-      `Olá, gostaria de ${CONFIG.CTA_PRIMARY.toLowerCase()}.`,
-      `Nome: ${data.nome}`,
-      `WhatsApp: ${data.whatsapp}`,
-      data.interesse ? `Procedimento: ${data.interesse}` : null,
-      data.email ? `E-mail: ${data.email}` : null,
-      data.mensagem ? `Mensagem: ${data.mensagem}` : null,
-    ].filter(Boolean);
-
-    const fallbackMessage = fallbackLines.join("\n");
-
-    const endpointReady =
-      CONFIG.FORM_ENDPOINT_URL &&
-      CONFIG.FORM_ENDPOINT_URL !== "FORM_ENDPOINT_URL";
-
-    if (!endpointReady) {
-      openWhatsApp(fallbackMessage, "thank-you.html");
+    if (!CONFIG.FORM_ACTION_URL || CONFIG.FORM_ACTION_URL === "FORM_ACTION_URL") {
+      setStatus("Formulário indisponível no momento. Por favor, use o botão “Falar por WhatsApp”.", true);
       return;
     }
 
-    try {
-      const response = await fetch(CONFIG.FORM_ENDPOINT_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
+    // Campos extras para o Apps Script (envio por e-mail via Workspace)
+    ensureHidden(form, "token", CONFIG.FORM_TOKEN || "");
+    ensureHidden(form, "page_url", window.location.href);
+    ensureHidden(form, "submitted_at", new Date().toISOString());
+    ensureHidden(form, "redirect", "https://www.drantoniorolim.com.br/thank-you.html");
 
-      if (!response.ok) {
-        throw new Error("Falha no envio");
-      }
+    // Honeypot simples (bots costumam preencher)
+    ensureHidden(form, "website", "");
 
-      window.location.href = "thank-you.html";
-    } catch (error) {
-      setStatus("Não foi possível enviar agora. Abrindo WhatsApp.", true);
-      openWhatsApp(fallbackMessage);
-    }
+    // Submissão tradicional (evita CORS e aumenta confiabilidade)
+    form.action = CONFIG.FORM_ACTION_URL;
+    form.method = "POST";
+    form.target = "_self";
+
+    setStatus("Enviando…");
+    if (submitBtn) submitBtn.disabled = true;
+
+    form.submit();
   });
 };
 
