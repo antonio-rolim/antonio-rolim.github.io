@@ -6,20 +6,19 @@ const CONFIG = {
   CTA_SECONDARY: "Falar por WhatsApp",
 
   /**
-   * URL do Google Apps Script (Web App) que envia e-mail via Google Workspace.
-   * Cole aqui a URL gerada em: Implantar → App da web.
-   *
-   * Exemplo: https://script.google.com/macros/s/AKfycb.../exec
+   * URL do Google Apps Script (Web App) que envia e-mail via Workspace.
+   * Ex.: https://script.google.com/macros/s/AKfycb.../exec
    */
-  FORM_ACTION_URL: "https://script.google.com/macros/s/AKfycby3yapzrTpuT_5e6aN-NGPAkn_N-hNwWwHQ-1D7pocqHlQ2DR-egslBCg_KcIyJlFlqag/exec",
+  FORM_ACTION_URL: "https://script.google.com/macros/s/AKfycbw484jckQ_oG27Y8FdCLhSNg5DWTCBqjSr_EZSV6QVixHQ2-URykaELF-JydABjaURjAQ/exec",
 
   /**
-   * Token simples anti-abuso (deve bater com o TOKEN no Apps Script).
-   * Use um token forte (20–40 chars). Ex.: gerador de senhas.
+   * Token forte (20–40 chars). Deve ser IGUAL ao TOKEN no Apps Script.
    */
   FORM_TOKEN: "Adfifgjq3gnqiegnh0q#%!gwgmi4tg",
 
-  // Cards exibidos na seção "Procedimentos em foco"
+  // Para redirecionar sem passar pelo Apps Script
+  THANK_YOU_URL: "thank-you.html",
+
   PROCEDURES: [
     {
       title: "Mamoplastia de aumento",
@@ -38,7 +37,6 @@ const CONFIG = {
     },
   ],
 
-  // Opções do dropdown (campo opcional)
   INTEREST_OPTIONS: [
     "Mamoplastia de aumento",
     "Mastopexia",
@@ -163,20 +161,70 @@ const setupReveal = () => {
   elements.forEach((el) => observer.observe(el));
 };
 
-const ensureHidden = (form, name, value) => {
-  let input = form.querySelector(`input[name="${name}"]`);
-  if (!input) {
-    input = document.createElement("input");
-    input.type = "hidden";
-    input.name = name;
-    form.appendChild(input);
+const tryCopyToClipboard = async (text) => {
+  try {
+    if (!navigator.clipboard) return false;
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch {
+    return false;
   }
-  input.value = value;
+};
+
+const buildPayload = (form) => {
+  return {
+    token: CONFIG.FORM_TOKEN || "",
+    nome: form.nome.value.trim(),
+    whatsapp: form.whatsapp.value.trim(),
+    email: form.email.value.trim(),
+    interesse: form.interesse && form.interesse.value ? form.interesse.value : "",
+    mensagem: form.mensagem.value.trim(),
+    consentimento: form.consentimento.checked ? "1" : "0",
+    page_url: window.location.href,
+    submitted_at: new Date().toISOString(),
+    website: "", // honeypot (deve ficar vazio)
+  };
+};
+
+const payloadToUrlEncoded = (payload) => {
+  const params = new URLSearchParams();
+  Object.entries(payload).forEach(([k, v]) => params.append(k, v ?? ""));
+  return params.toString();
+};
+
+const sendViaBeaconOrFetch = async (payload) => {
+  const url = CONFIG.FORM_ACTION_URL;
+
+  // 1) Tenta sendBeacon (fire-and-forget; bom para navegar em seguida)
+  try {
+    if (navigator.sendBeacon) {
+      const body = payloadToUrlEncoded(payload);
+      const blob = new Blob([body], { type: "application/x-www-form-urlencoded;charset=UTF-8" });
+      const ok = navigator.sendBeacon(url, blob);
+      if (ok) return true;
+    }
+  } catch {
+    // ignora e tenta fetch
+  }
+
+  // 2) Fallback: fetch no-cors + keepalive (não lemos resposta; objetivo é entregar o POST)
+  const body = payloadToUrlEncoded(payload);
+
+  await fetch(url, {
+    method: "POST",
+    mode: "no-cors",
+    keepalive: true,
+    headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
+    body,
+  });
+
+  return true;
 };
 
 const setupForm = () => {
   const form = document.getElementById("lead-form");
   if (!form) return;
+
   const status = form.querySelector(".form-status");
   const submitBtn = form.querySelector('button[type="submit"]');
 
@@ -185,7 +233,7 @@ const setupForm = () => {
     status.style.color = isError ? "#b34b3c" : "";
   };
 
-  form.addEventListener("submit", (event) => {
+  form.addEventListener("submit", async (event) => {
     event.preventDefault();
 
     const nome = form.nome.value.trim();
@@ -217,24 +265,46 @@ const setupForm = () => {
       return;
     }
 
-    // Campos extras para o Apps Script (envio por e-mail via Workspace)
-    ensureHidden(form, "token", CONFIG.FORM_TOKEN || "");
-    ensureHidden(form, "page_url", window.location.href);
-    ensureHidden(form, "submitted_at", new Date().toISOString());
-    ensureHidden(form, "redirect", "https://www.drantoniorolim.com.br/thank-you.html");
-
-    // Honeypot simples (bots costumam preencher)
-    ensureHidden(form, "website", "");
-
-    // Submissão tradicional (evita CORS e aumenta confiabilidade)
-    form.action = CONFIG.FORM_ACTION_URL;
-    form.method = "POST";
-    form.target = "_self";
+    if (!CONFIG.FORM_TOKEN) {
+      setStatus("Formulário indisponível no momento. Por favor, use o botão “Falar por WhatsApp”.", true);
+      return;
+    }
 
     setStatus("Enviando…");
     if (submitBtn) submitBtn.disabled = true;
 
-    form.submit();
+    const payload = buildPayload(form);
+
+    try {
+      await sendViaBeaconOrFetch(payload);
+
+      // Mantém o usuário no seu domínio: redireciona diretamente para a sua thank-you.
+      window.location.href = CONFIG.THANK_YOU_URL;
+    } catch (err) {
+      // Falha real (ex.: offline). Mostra fallback sem abrir WhatsApp.
+      const fallbackLines = [
+        `Solicitação de contato — ${CONFIG.CTA_PRIMARY}`,
+        `Nome: ${payload.nome}`,
+        `WhatsApp: ${payload.whatsapp}`,
+        payload.interesse ? `Procedimento: ${payload.interesse}` : null,
+        payload.email ? `E-mail: ${payload.email}` : null,
+        payload.mensagem ? `Mensagem: ${payload.mensagem}` : null,
+        `URL: ${payload.page_url}`,
+        `Data/Hora: ${payload.submitted_at}`,
+      ].filter(Boolean);
+
+      const fallbackMessage = fallbackLines.join("\n");
+      const copied = await tryCopyToClipboard(fallbackMessage);
+
+      setStatus(
+        copied
+          ? "Não foi possível enviar agora. Copiamos os dados para a área de transferência."
+          : "Não foi possível enviar agora. Por favor, tente novamente em instantes.",
+        true
+      );
+
+      if (submitBtn) submitBtn.disabled = false;
+    }
   });
 };
 
