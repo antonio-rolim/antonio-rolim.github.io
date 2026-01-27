@@ -2,7 +2,7 @@ const CONFIG = {
   WHATSAPP_PHONE_E164: "5511952516867",
   CITY: "Itaim Bibi, São Paulo – SP",
   ADDRESS: "Av. Brig. Faria Lima, 3900 - 7º andar - Itaim Bibi, São Paulo - SP",
-  CTA_PRIMARY: "Solicitar agendamento",
+  CTA_PRIMARY: "Realizar agendamento",
   CTA_SECONDARY: "Falar por WhatsApp",
 
   /**
@@ -38,15 +38,15 @@ const CONFIG = {
   ],
 
   INTEREST_OPTIONS: [
-    "Mamoplastia de aumento",
-    "Mastopexia",
-    "Contratura capsular",
-    "Revisão de cirurgia prévia",
-    "Abdominoplastia / Lipoescultura",
-    "Face",
-    "Procedimentos",
-    "Outros",
     "não informado",
+    "Aumento de mama",
+    "Mastopexia (com ou sem prótese)",
+    "Revisão mamária / prótese / contratura",
+    "Redução mamária",
+    "Contorno corporal (lipo/abdominoplastia/braqui/cruro)",
+    "Face (rinoplastia/otoplastia/ritidoplastia)",
+    "Reconstrução / Oncocutânea",
+    "Outros (inclui ninfoplastia)"
   ],
 };
 
