@@ -509,6 +509,31 @@ a {
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
 }
 
+/* iOS Safari / Instagram WebView overflow fix for <select> inside grid/cards */
+.form-section > * { 
+  min-width: 0;
+}
+.lead-form {
+  min-width: 0;
+  max-width: 100%;
+}
+.field {
+  min-width: 0;
+}
+.lead-form select {
+  max-width: 100%;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+@supports (-webkit-overflow-scrolling: touch) {
+  .lead-form select {
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
 .lead-form {
   background: #fff;
   padding: 28px;
@@ -531,6 +556,11 @@ textarea {
   padding: 12px 14px;
   border-radius: 12px;
   border: 1px solid var(--border-light);
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  display: block;
+
 }
 
 input:focus,
