@@ -1,0 +1,205 @@
+Header
+[[Link 1]]
+Método
+[[Link 2]]
+Procedimentos
+[[Link 3]]
+FAQ.
+[[Link 4]]
+Contato
+[[Button 1]]
+Realizar agendamento
+=========================
+Hero
+[[Paragraph 1]]
+Cirurgia mamária
+[[Heading 1]]
+Cirurgia mamária com método, técnica adequada e planejamento individualizado
+[[Paragraph 2]]
+Indicação individual, planejamento cirúrgico detalhado e acompanhamento próximo - com foco em segurança e resultado harmônico e natural.
+[[Button 1]]
+Solicitar agendamento
+[[Button 2]]
+Falar por WhatsApp
+[[Paragraph 3]]
+Atendimento particular | Itaim Bibi, São Paulo – SP
+[[Link 1]]
+Ou, se preferir, envie o formulário
+[[Card-title 1]]
+O que guia cada decisão
+[[List 1]]
+Base reconstrutiva aplicada à cirurgia mamária: estrutura e estabilidade, não apenas aparência.
+Indicação com critério: técnica, cicatriz e suporte tecidual definidos caso a caso.
+Pós-operatório acompanhado de perto, com orientação clara, objetiva e prudente.
+=========================
+Autoridade
+[[Heading 1]]
+Formação técnica e atuação em alta complexidade
+[[Paragraph 1]]
+Formado pela UNICAMP (graduação e residência em cirurgia geral), residência em Cirurgia Plástica no Hospital Santa Marcelina e título de especialista pela Sociedade Brasileira de Cirurgia Plástica. Subespecialização em Reconstrução Mamária (ICESP/HC–FMUSP) e em Microcirurgia Reconstrutiva (ICESP/HC–FMUSP) e atuação recente em reconstrução mamária e em reconstruções de alta complexidade. Na estética, isso se traduz em método: indicação bem feita, execução precisa e acompanhamento responsável.
+[[Heading 2]]
+Cirurgia mamária
+[[List 1]]
+Aumento de mama (quando indicado, com estratégia de forma, proporção e segurança).
+Mastopexia (com ou sem prótese), com planejamento de cicatriz e sustentação.
+Redução mamária, quando indicada, com foco em forma, conforto e segurança.
+Cirurgia mamária secundária e revisões (troca de prótese, contratura, refinamentos): correção com critérios técnicos.
+Contorno corporal: lipoaspiração/lipoescultura, abdominoplastia, braquioplastia e cruroplastia.
+Face e íntima: rinoplastia, otoplastia, ritidoplastia e ninfoplastia. Reconstruções e oncocutânea, quando indicado.
+[[Heading 3]]
+Localidade
+[[Paragraph 2]]
+Itaim Bibi, São Paulo – SP
+[[Paragraph 3]]
+Atendimento exclusivamente particular.
+=========================
+Atendimento
+[[Heading 1]]
+Atendimento particular, reservado e com tempo
+[[Paragraph 1]]
+Atendimento particular para quem valoriza discrição, previsibilidade e uma conversa franca sobre possibilidades e limites. Cada etapa é conduzida com atenção e clareza, do primeiro contato ao pós-operatório.
+[[Paragraph 2]]
+Com tempo dedicado em consulta e comunicação cuidadosa, o foco é alinhar expectativas, definir indicações e construir um plano cirúrgico realista para o seu caso.
+[[Card-title 1]]
+Atendimento reservado
+[[List 1]]
+Agenda organizada para atenção total em cada consulta.
+Comunicação direta com a equipe, com discrição e objetividade.
+Conforto e privacidade em todas as etapas do cuidado.
+=========================
+Método
+[[Heading 1]]
+Método
+[[Heading 2]]
+Avaliação e planejamento
+[[Paragraph 1]]
+Na primeira consulta, avaliamos sua anatomia, histórico e objetivos. A partir disso, definimos a indicação e o plano cirúrgico mais seguro e coerente, com transparência sobre limites e riscos.
+[[Heading 3]]
+Cirurgia
+[[Paragraph 2]]
+Execução técnica precisa em ambiente adequado, com equipe e protocolos compatíveis com o seu procedimento e seu perfil.
+[[Heading 4]]
+Acompanhamento
+[[Paragraph 3]]
+Acompanhamento próximo, com orientações objetivas e ajustes ao longo da recuperação, priorizando segurança e conforto.
+=========================
+Procedimentos
+[[Heading 1]]
+Cirurgias realizadas
+[[Paragraph 1]]
+Cirurgia mamária, contorno corporal e plástica facial, bem como oncocutânea e reconstruções (simples e complexas), sempre com indicação individual e planejamento.
+=========================
+FAQ
+[[Heading 1]]
+Perguntas frequentes
+[[Text 1]]
+A consulta é paga?
+[[Paragraph 1]]
+Sim. A consulta é uma etapa técnica de avaliação e planejamento, com tempo dedicado e explicação clara. O valor da primeira consulta é de R$ 1.200,00.
+[[Text 2]]
+Como funciona a avaliação técnica?
+[[Paragraph 2]]
+Análise de histórico, exame físico e objetivos, com explicação clara e personalizada — incluindo indicação, limitações e estratégia.
+[[Text 3]]
+O planejamento muda conforme o caso?
+[[Paragraph 3]]
+Sim. Cada caso tem anatomia, histórico e objetivos diferentes. O planejamento é individual.
+[[Text 4]]
+A recuperação costuma ser longa?
+[[Paragraph 4]]
+O tempo varia conforme o procedimento e o organismo. A equipe orienta cada fase.
+[[Text 5]]
+Como ficam as cicatrizes?
+[[Paragraph 5]]
+As cicatrizes são planejadas com critério e acompanhadas no pós-operatório.
+[[Text 6]]
+É possível combinar procedimentos?
+[[Paragraph 6]]
+A possibilidade depende de avaliação técnica, segurança e tempo cirúrgico adequado.
+[[Text 7]]
+Quando posso retornar às atividades?
+[[Paragraph 7]]
+O retorno é gradual e orientado pela equipe conforme a evolução clínica.
+[[Text 8]]
+Como funciona a segurança hospitalar?
+[[Paragraph 8]]
+Segurança e prudência são prioridades. A indicação define ambiente, equipe e necessidade de pernoite, conforme seu perfil e o procedimento.
+[[Text 9]]
+Preciso usar prótese?
+[[Paragraph 9]]
+Nem sempre. A indicação depende do objetivo estético e da avaliação técnica individual.
+[[Text 10]]
+Quais são os valores?
+[[Paragraph 10]]
+Os valores variam conforme indicação, técnica, tempo cirúrgico, materiais e estrutura hospitalar. Tudo é discutido com transparência após avaliação e planejamento.
+=========================
+Formulário
+[[Heading 1]]
+Solicite contato
+[[Paragraph 1]]
+Deixe seus dados. A equipe retorna com discrição para entender seu objetivo e orientar o próximo passo.
+[[List 1]]
+Retorno pela equipe, com discrição.
+Critérios claros, orientação objetiva e próximo passo definido.
+Atendimento particular em Itaim Bibi, São Paulo – SP.
+[[Text 1]]
+Nome*
+[[Text 2]]
+WhatsApp*
+[[Text 3]]
+E-mail (opcional)
+[[Text 4]]
+Procedimento (opcional)
+[[Text 5]]
+não informado
+[[Text 6]]
+Aumento de mama
+[[Text 7]]
+Mastopexia (com ou sem prótese)
+[[Text 8]]
+Revisão mamária / prótese / contratura
+[[Text 9]]
+Redução mamária
+[[Text 10]]
+Contorno corporal (lipo/abdominoplastia/braqui/cruro)
+[[Text 11]]
+Face (rinoplastia/otoplastia/ritidoplastia)
+[[Text 12]]
+Reconstrução / Oncocutânea
+[[Text 13]]
+Outros (inclui ninfoplastia)
+[[Text 14]]
+Mensagem (opcional)
+[[Text 15]]
+Li e concordo com a
+.
+[[Link 1]]
+Política de Privacidade
+[[Button 1]]
+Enviar e solicitar retorno
+=========================
+CTA Final
+[[Heading 1]]
+Solicite uma avaliação
+[[Paragraph 1]]
+Converse com a equipe e receba orientação sobre o próximo passo mais adequado para o seu caso.
+[[Button 1]]
+Solicitar agendamento
+=========================
+Rodapé
+[[Paragraph 1]]
+Antônio Rolim
+[[Paragraph 2]]
+CRM-SP: 156613 | RQE: 89943 (Cirurgia Plástica)
+[[Paragraph 3]]
+Cirurgia mamária como foco principal, com rigor técnico também em contorno corporal, face e reconstruções.
+[[Paragraph 4]]
+Itaim Bibi, São Paulo – SP
+[[Paragraph 5]]
+Av. Brig. Faria Lima, 3900 - 7º andar - Itaim Bibi, São Paulo - SP
+[[Link 1]]
+Voltar ao topo
+[[Link 2]]
+Política de privacidade
+[[Button 1]]
+Falar por WhatsApp
