@@ -1,7 +1,7 @@
 # CONTEXT.md — Landing Page (MUC) — Dr. Antônio Rolim (Cirurgia Mamária)
 
 ## 0) Objetivo (1 frase)
-Construir uma landing page premium (dark mode) para converter tráfego de alta intenção em **contato no WhatsApp** e **agendamento de consulta paga**, com foco principal em **cirurgias mamárias** (aumento, mastopexia, revisões) e posicionamento de “rigor reconstrutivo aplicado à estética”.
+Construir uma landing page premium (dark mode) para converter tráfego de alta intenção em **contato no WhatsApp** e **agendamento de consulta médica (paga)**, com foco principal em **cirurgias mamárias** (aumento, mastopexia, revisões) e posicionamento de “rigor reconstrutivo aplicado à estética”.
 
 ---
 
@@ -100,7 +100,7 @@ Mulheres 35–50 anos (frequentemente pós-maternidade) e/ou com histórico de c
 ### Dobra 1 — HERO (impacto)
 - Headline com rigor técnico, precisão e previsibilidade
 - Subheadline com “indicação individual/planejamento cirúrgico/acompanhamento”
-- CTA: **“Agendar primeira consulta”** (convite direto, sem urgência artificial).
+- CTA: **“Agendar Consulta Médica”** (convite direto, sem urgência artificial).
 - Visual: dark premium, minimalista; sem fotos stock “mulher com fita métrica”.
 
 ### Dobra 2 — Autoridade (curta, objetiva)
@@ -118,17 +118,17 @@ Mulheres 35–50 anos (frequentemente pós-maternidade) e/ou com histórico de c
 ### Dobra 5 — FAQ (10 perguntas)
 - Acordeão acessível; respostas curtas
 - 1 pergunta sobre valores (variabilidade por caso; discutido após avaliação)
-- Incluir valor da primeira consulta: **R$ 1.200,00**
+- Incluir valor da consulta médica: **R$ 1.200,00**
 
 ### Dobra final — CTA + Rodapé
-- CTA final: “Agendar primeira consulta”
+- CTA final: “Agendar Consulta Médica”
 - Rodapé com contato, localidade (Itaim Bibi, São Paulo – SP), links (privacy)
 
 ---
 
 ## 7) Microcopy de CTA (evitar “efeito Polishop”)
 - Evitar: “AGENDE AGORA”, “ÚLTIMAS VAGAS”, “COMPRE”
-- Preferir: “Agendar primeira consulta”, “Falar com a equipe”
+- Preferir: “Agendar Consulta Médica”, “Falar com a equipe”
 - Design do CTA:
   - ghost button dourado (contorno fino) ou
   - dourado fosco sólido com tipografia sóbria
@@ -177,5 +177,5 @@ Se atendendo em coworking premium (ex.: Atria/B32), reduzir fricção percebida:
 - `PRIMARY_FOCUS = ["Mamoplastia de aumento", "Mastopexia", "Cirurgia mamária secundária (revisões)"]`
 - `CITY = "Itaim Bibi, São Paulo – SP"`
 - `ADDRESS = "Av. Brig. Faria Lima, 3900 - 7º andar - Itaim Bibi, São Paulo - SP"`
-- `CTA_PRIMARY = "Agendar primeira consulta"`
+- `CTA_PRIMARY = "Agendar Consulta Médica"`
 - `CTA_SECONDARY = "Falar com a equipe"`

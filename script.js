@@ -2,10 +2,10 @@ const CONFIG = {
   WHATSAPP_PHONE_E164: "5511952516867",
   CITY: "Itaim Bibi, São Paulo – SP",
   ADDRESS: "Av. Brig. Faria Lima, 3900 - 7º andar - Itaim Bibi, São Paulo - SP",
-  CTA_PRIMARY: "Agendar primeira consulta",
+  CTA_PRIMARY: "Agendar Consulta Médica",
   CTA_SECONDARY: "Falar com a equipe",
   WHATSAPP_DEFAULT_MESSAGE:
-    "Olá, gostaria de agendar a primeira consulta com o Dr. Antônio Rolim.",
+    "Olá, vim pelo site e gostaria de agendar uma consulta médica com o Dr. Antônio Rolim.",
 
   /**
    * URL do Google Apps Script (Web App) que envia e-mail via Workspace.
@@ -23,28 +23,33 @@ const CONFIG = {
 
   PROCEDURES: [
     {
-      title: "Mamoplastia de aumento",
+      title: "Mamoplastia de Aumento (Prótese de Mama)",
       description:
-        "Critério de indicação, proporção e cobertura tecidual — com foco em estabilidade e refinamento.",
+        "Inclusão de implantes de silicone selecionados através de planejamento bio-dimensional, adequando volume às proporções do tórax e respeitando limites dos tecidos.",
     },
     {
-      title: "Mastopexia (com ou sem prótese)",
+      title: "Mastopexia (Lifting Mamário)",
       description:
-        "Estratégia de sustentação e cicatriz planejada, com decisão técnica caso a caso.",
+        "Correção de ptose e reposicionamento do complexo aréolo-papilar, com ou sem implantes, conforme qualidade de pele e glândula.",
     },
     {
-      title: "Cirurgia mamária secundária (revisões)",
+      title: "Reconstrução Mamária",
       description:
-        "Revisões e refinamentos (contratura, trocas e assimetrias) com critérios e planejamento.",
+        "Reparação após mastectomia com técnicas complexas (expansores, próteses ou retalhos) para recriar volume e simetria mamária.",
+    },
+    {
+      title: "Explante Mamário",
+      description:
+        "Remoção definitiva de implantes por indicação clínica ou desejo, com remoção de cápsula e reorganização possível dos tecidos remanescentes.",
     },
   ],
 
   INTEREST_OPTIONS: [
     "não informado",
-    "Mamoplastia de aumento",
-    "Mastopexia (com ou sem prótese)",
-    "Cirurgia mamária secundária (revisões)",
-    "Explante (quando indicado)",
+    "Mamoplastia de Aumento (Prótese de Mama)",
+    "Mastopexia (Lifting Mamário)",
+    "Reconstrução Mamária",
+    "Explante Mamário",
     "Outros procedimentos"
   ],
 };
@@ -72,6 +77,12 @@ const initConfigText = () => {
 const initProcedures = () => {
   const grid = document.getElementById("procedures-grid");
   if (!grid) return;
+  const existingCards = grid.querySelectorAll(".procedure-card");
+  if (existingCards.length) {
+    // Prefer content authored in HTML (editable via lpedit). Do not overwrite labels.
+    return;
+  }
+
   grid.innerHTML = "";
 
   CONFIG.PROCEDURES.forEach((procedure) => {
@@ -80,7 +91,7 @@ const initProcedures = () => {
     card.innerHTML = `
       <h3>${procedure.title}</h3>
       <p>${procedure.description}</p>
-      <a class="btn btn-ghost" data-whatsapp data-wa-message="${procedure.title}">${CONFIG.CTA_PRIMARY}</a>
+      <a class="btn btn-ghost" data-procedure-cta data-whatsapp data-wa-message="${procedure.title}">${CONFIG.CTA_PRIMARY}</a>
     `;
     grid.appendChild(card);
   });
@@ -118,10 +129,10 @@ const initWhatsAppLinks = () => {
   document.querySelectorAll("[data-whatsapp]").forEach((link) => {
     let message =
       CONFIG.WHATSAPP_DEFAULT_MESSAGE ||
-      `Olá, gostaria de ${CONFIG.CTA_PRIMARY.toLowerCase()}.`;
+      `Olá, vim pelo site e gostaria de ${CONFIG.CTA_PRIMARY.toLowerCase()}.`;
     const customMessage = link.getAttribute("data-wa-message");
     if (customMessage) {
-      message = `Olá, gostaria de agendar a primeira consulta sobre ${customMessage} com o Dr. Antônio Rolim.`;
+      message = `Olá, vim pelo site e gostaria de agendar uma consulta médica sobre ${customMessage} com o Dr. Antônio Rolim.`;
     }
     link.setAttribute("href", buildWhatsAppLink(message));
     link.setAttribute("target", "_blank");
