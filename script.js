@@ -1,57 +1,59 @@
 const CONFIG = {
-  WHATSAPP_PHONE_E164: "5511952516867",
+  // Seus dados confirmados
+  WHATSAPP_PHONE_E164: "5511952516867", 
+  
+  // Endereço atualizado (para garantir coerência nos e-mails do sistema)
   CITY: "Itaim Bibi, São Paulo – SP",
   ADDRESS: "Av. Brig. Faria Lima, 3900 - 7º andar - Itaim Bibi, São Paulo - SP",
+  
+  // Textos dos botões
   CTA_PRIMARY: "Agendar Consulta Médica",
   CTA_SECONDARY: "Falar com a equipe",
+  
+  // Mensagem padrão do WhatsApp (Mais elegante e direta)
   WHATSAPP_DEFAULT_MESSAGE:
-    "Olá, vim pelo site e gostaria de agendar uma consulta médica com o Dr. Antônio Rolim.",
+    "Olá, vim pelo site e gostaria de informações sobre o agendamento de consulta com o Dr. Antônio Rolim.",
 
-  /**
-   * URL do Google Apps Script (Web App) que envia e-mail via Workspace.
-   * Ex.: https://script.google.com/macros/s/AKfycb.../exec
-   */
+  // SUA URL do Google Apps Script (MANTIDA)
   FORM_ACTION_URL: "https://script.google.com/macros/s/AKfycbw484jckQ_oG27Y8FdCLhSNg5DWTCBqjSr_EZSV6QVixHQ2-URykaELF-JydABjaURjAQ/exec",
 
-  /**
-   * Token forte (20–40 chars). Deve ser IGUAL ao TOKEN no Apps Script.
-   */
+  // SEU Token (MANTIDO)
   FORM_TOKEN: "Adfifgjq3gnqiegnh0q#%!gwgmi4tg",
 
-  // Para redirecionar sem passar pelo Apps Script
+  // Página de sucesso
   THANK_YOU_URL: "thank-you.html",
 
+  // A LISTA DE PROCEDIMENTOS (Alinhada com o Posicionamento High Ticket)
   PROCEDURES: [
     {
-      title: "Mamoplastia de Aumento (Prótese de Mama)",
-      description:
-        "Inclusão de implantes de silicone selecionados através de planejamento bio-dimensional, adequando volume às proporções do tórax e respeitando limites dos tecidos.",
+      title: "Mamoplastia de Aumento",
+      description: "Planejamento bio-dimensional e recuperação assistida."
     },
     {
       title: "Mastopexia (Lifting Mamário)",
-      description:
-        "Correção de ptose e reposicionamento do complexo aréolo-papilar, com ou sem implantes, conforme qualidade de pele e glândula.",
+      description: "Reposicionamento dos tecidos com ou sem uso de implantes."
+    },
+    {
+      title: "Cirurgia Secundária de Mama",
+      description: "Correção de complexidades, troca de implantes e refinamentos."
     },
     {
       title: "Reconstrução Mamária",
-      description:
-        "Reparação após mastectomia com técnicas complexas (expansores, próteses ou retalhos) para recriar volume e simetria mamária.",
+      description: "Restauração da forma e simetria pós-mastectomia."
     },
     {
-      title: "Explante Mamário",
-      description:
-        "Remoção definitiva de implantes por indicação clínica ou desejo, com remoção de cápsula e reorganização possível dos tecidos remanescentes.",
+      title: "Explante de Silicone",
+      description: "Remoção de implantes e reorganização tecidual."
     },
-  ],
-
-  INTEREST_OPTIONS: [
-    "não informado",
-    "Mamoplastia de Aumento (Prótese de Mama)",
-    "Mastopexia (Lifting Mamário)",
-    "Reconstrução Mamária",
-    "Explante Mamário",
-    "Outros procedimentos"
-  ],
+    {
+      title: "Contorno Corporal (Lipo/Abdome)",
+      description: "Lipoaspiração e Abdominoplastia com rigor técnico."
+    },
+    {
+      title: "Outros Procedimentos",
+      description: "Face, Pálpebras e Ninfoplastia."
+    }
+  ]
 };
 
 const whatsappRegex = /^(\+?55)?\s*(\(?\d{2}\)?)?\s*9?\d{4}[-\s]?\d{4}$/;
@@ -109,8 +111,31 @@ const initProcedureSelect = () => {
   opt0.selected = true;
   select.appendChild(opt0);
 
-  CONFIG.INTEREST_OPTIONS.forEach((label) => {
-    if (label === "não informado") return;
+  const sourceOptions = Array.isArray(CONFIG.INTEREST_OPTIONS) && CONFIG.INTEREST_OPTIONS.length
+    ? CONFIG.INTEREST_OPTIONS
+    : [
+        ...(Array.isArray(CONFIG.PROCEDURES) ? CONFIG.PROCEDURES.map((item) => item.title) : []),
+        "Outros procedimentos",
+      ];
+
+  const uniqueOptions = Array.from(
+    new Set(
+      sourceOptions
+        .filter((label) => label && label !== "não informado")
+        .map((label) => label.trim())
+    )
+  );
+
+  const normalizedMap = new Map();
+  uniqueOptions.forEach((label) => {
+    normalizedMap.set(label.toLowerCase(), label);
+  });
+
+  if (normalizedMap.has("outros procedimentos")) {
+    normalizedMap.set("outros procedimentos", "Outros procedimentos");
+  }
+
+  Array.from(normalizedMap.values()).forEach((label) => {
     const option = document.createElement("option");
     option.value = label;
     option.textContent = label;

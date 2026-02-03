@@ -1,36 +1,49 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Obrigado | Antônio Rolim</title>
-  <meta name="description" content="Obrigado pelo contato. Em breve a equipe retorna para orientar sua consulta médica." />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css" />
-  <script defer src="script.js"></script>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1" name="viewport"/>
+    <title>Contato Recebido | Dr. Antônio Rolim</title>
+    <meta content="#27345f" name="theme-color"/>
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet"/>
+    <link href="styles.css" rel="stylesheet"/>
 </head>
-<body>
-  <header class="site-header" aria-label="Topo">
-    <div class="container header-inner">
-      <a class="logo" href="index.html" aria-label="Voltar ao início">
-        <img src="assets/logo-hero.png" alt="Antônio Rolim - Cirurgião plástico" width="1266" height="649" />
-      </a>
-      <a class="btn btn-primary" data-cta="primary" data-whatsapp>Agendar Consulta Médica</a>
-    </div>
-  </header>
+<body class="thank-you-page" style="display: flex; flex-direction: column; min-height: 100vh;">
+    
+    <main class="container" style="flex: 1; display: flex; align-items: center; justify-content: center; text-align: center; padding: 4rem 1rem;">
+        <div style="max-width: 600px;">
+            <img alt="Dr. Antônio Rolim" src="assets/logo-hero.png" style="height: 60px; margin-bottom: 2rem;"/>
+            
+            <h1 class="heading-2" style="margin-bottom: 1.5rem;">Solicitação Recebida</h1>
+            
+            <p class="lead" style="margin-bottom: 2rem;">Agradecemos o contato. Sua mensagem foi encaminhada diretamente para nossa equipe de atendimento.</p>
+            
+            <p style="margin-bottom: 3rem; color: var(--text-light);">Entraremos em contato via WhatsApp no menor tempo possível para dar seguimento ao seu agendamento.</p>
+            
+            <div style="display: flex; flex-direction: column; gap: 1rem; align-items: center;">
+                <a class="btn btn-primary" data-whatsapp="" href="#">
+                    Falar agora no WhatsApp
+                </a>
+                <a class="btn btn-ghost" href="index.html">
+                    Voltar para o site
+                </a>
+            </div>
+        </div>
+    </main>
 
-  <main class="section section-light">
-    <div class="container centered">
-      <h1>Obrigado pelo contato.</h1>
-      <p>Recebemos suas informações. Em breve a equipe retorna com orientação objetiva e critérios técnicos.</p>
-      <p data-config="city">Atendimento particular | São Paulo – SP</p>
-      <div class="hero-ctas center">
-        <a class="btn btn-primary" data-cta="secondary" data-whatsapp>Falar com a equipe</a>
-        <a class="btn btn-ghost" href="index.html">Voltar para a página principal</a>
-      </div>
-    </div>
-  </main>
+    <footer class="footer" style="padding: 2rem 0;">
+        <div class="container" style="text-align: center;">
+            <p class="muted">Av. Brig. Faria Lima, Itaim Bibi – SP</p>
+        </div>
+    </footer>
+
+    <script>
+        // Reutiliza a lógica de link do WhatsApp do site principal se necessário
+        document.querySelectorAll('[data-whatsapp]').forEach(btn => {
+            btn.href = "https://wa.me/5511952516867?text=Olá,%20gostaria%20de%20agendar%20uma%20consulta.";
+        });
+    </script>
 </body>
 </html>

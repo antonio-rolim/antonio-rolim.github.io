@@ -4,10 +4,12 @@
   --brand-blue-deep: #212a4a;
   --brand-gold: #b79a5a;
   --brand-gold-soft: rgba(183, 154, 90, 0.22);
+  --navy: #2b345f;
   --surface-dark: #1b213a;
   --surface-light: #f6f2ea;
   --text-on-dark: #f4f1ed;
   --text-on-light: #1a1f2b;
+  --text-light: rgba(26, 31, 43, 0.7);
   --muted-on-dark: rgba(244, 241, 237, 0.7);
   --muted-on-light: rgba(26, 31, 43, 0.62);
   --border-dark: rgba(183, 154, 90, 0.25);
@@ -367,6 +369,87 @@ a {
   background: radial-gradient(circle at 20% -10%, rgba(183, 154, 90, 0.14), transparent 60%),
     linear-gradient(180deg, rgba(255, 255, 255, 0.92), var(--surface-light));
   color: var(--text-on-light);
+}
+
+/* Privacy & Thank You pages */
+.privacy-page,
+.thank-you-page {
+  background: var(--surface-light);
+  color: var(--text-on-light);
+}
+
+.privacy-page .header,
+.thank-you-page .header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: rgba(27, 33, 58, 0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(183, 154, 90, 0.18);
+}
+
+.privacy-page .header-container,
+.thank-you-page .header-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 0;
+}
+
+.privacy-page .header .btn-ghost,
+.thank-you-page .header .btn-ghost {
+  color: var(--text-on-dark);
+  border-color: rgba(183, 154, 90, 0.65);
+}
+
+.privacy-page .header .btn-ghost:hover,
+.thank-you-page .header .btn-ghost:hover {
+  background: rgba(183, 154, 90, 0.12);
+}
+
+.privacy-page .heading-2,
+.thank-you-page .heading-2 {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  font-size: clamp(2rem, 4vw, 2.6rem);
+  letter-spacing: -0.02em;
+  color: var(--text-on-light);
+}
+
+.privacy-page .lead,
+.thank-you-page .lead {
+  color: var(--text-light);
+  font-size: 1.05rem;
+}
+
+.privacy-page .text-block h3 {
+  font-family: var(--font-serif);
+  font-weight: 600;
+}
+
+.privacy-page .text-block p,
+.thank-you-page p {
+  color: var(--text-light);
+}
+
+.privacy-page .footer,
+.thank-you-page .footer {
+  border-top: 1px solid rgba(26, 31, 43, 0.12);
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.thank-you-page .btn-ghost {
+  color: var(--brand-blue);
+  border-color: var(--brand-blue);
+}
+
+.thank-you-page .btn-ghost:hover {
+  background: rgba(43, 52, 95, 0.08);
+}
+
+.privacy-page .section-padding {
+  padding: clamp(40px, 8vw, 72px) 0;
 }
 
 .section-light .muted,
