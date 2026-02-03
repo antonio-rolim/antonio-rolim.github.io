@@ -2,8 +2,10 @@ const CONFIG = {
   WHATSAPP_PHONE_E164: "5511952516867",
   CITY: "Itaim Bibi, São Paulo – SP",
   ADDRESS: "Av. Brig. Faria Lima, 3900 - 7º andar - Itaim Bibi, São Paulo - SP",
-  CTA_PRIMARY: "Realizar agendamento",
-  CTA_SECONDARY: "Falar por WhatsApp",
+  CTA_PRIMARY: "Agendar primeira consulta",
+  CTA_SECONDARY: "Falar com a equipe",
+  WHATSAPP_DEFAULT_MESSAGE:
+    "Olá, gostaria de agendar a primeira consulta com o Dr. Antônio Rolim.",
 
   /**
    * URL do Google Apps Script (Web App) que envia e-mail via Workspace.
@@ -23,30 +25,27 @@ const CONFIG = {
     {
       title: "Mamoplastia de aumento",
       description:
-        "Indicação individual e planejamento preciso para harmonia, segurança e previsibilidade.",
+        "Critério de indicação, proporção e cobertura tecidual — com foco em estabilidade e refinamento.",
     },
     {
       title: "Mastopexia (com ou sem prótese)",
       description:
-        "Levantamento e reestruturação com planejamento técnico e cuidado estético.",
+        "Estratégia de sustentação e cicatriz planejada, com decisão técnica caso a caso.",
     },
     {
       title: "Cirurgia mamária secundária (revisões)",
       description:
-        "Para corrigir ou refinar aspectos insatisfatórios de cirurgias prévias, com critérios técnicos.",
+        "Revisões e refinamentos (contratura, trocas e assimetrias) com critérios e planejamento.",
     },
   ],
 
   INTEREST_OPTIONS: [
     "não informado",
-    "Aumento de mama",
+    "Mamoplastia de aumento",
     "Mastopexia (com ou sem prótese)",
-    "Revisão mamária / prótese / contratura",
-    "Redução mamária",
-    "Contorno corporal (lipo/abdominoplastia/braqui/cruro)",
-    "Face (rinoplastia/otoplastia/ritidoplastia)",
-    "Reconstrução / Oncocutânea",
-    "Outros (inclui ninfoplastia)"
+    "Cirurgia mamária secundária (revisões)",
+    "Explante (quando indicado)",
+    "Outros procedimentos"
   ],
 };
 
@@ -81,7 +80,7 @@ const initProcedures = () => {
     card.innerHTML = `
       <h3>${procedure.title}</h3>
       <p>${procedure.description}</p>
-      <a class="btn btn-ghost" data-whatsapp data-wa-message="${procedure.title}">Quero avaliar meu caso</a>
+      <a class="btn btn-ghost" data-whatsapp data-wa-message="${procedure.title}">${CONFIG.CTA_PRIMARY}</a>
     `;
     grid.appendChild(card);
   });
@@ -117,10 +116,12 @@ const initMapEmbed = () => {
 
 const initWhatsAppLinks = () => {
   document.querySelectorAll("[data-whatsapp]").forEach((link) => {
-    let message = `Olá, gostaria de ${CONFIG.CTA_PRIMARY.toLowerCase()}.`;
+    let message =
+      CONFIG.WHATSAPP_DEFAULT_MESSAGE ||
+      `Olá, gostaria de ${CONFIG.CTA_PRIMARY.toLowerCase()}.`;
     const customMessage = link.getAttribute("data-wa-message");
     if (customMessage) {
-      message = `Olá, gostaria de ${CONFIG.CTA_PRIMARY.toLowerCase()} sobre ${customMessage}.`;
+      message = `Olá, gostaria de agendar a primeira consulta sobre ${customMessage} com o Dr. Antônio Rolim.`;
     }
     link.setAttribute("href", buildWhatsAppLink(message));
     link.setAttribute("target", "_blank");
@@ -261,12 +262,12 @@ const setupForm = () => {
     }
 
     if (!CONFIG.FORM_ACTION_URL || CONFIG.FORM_ACTION_URL === "FORM_ACTION_URL") {
-      setStatus("Formulário indisponível no momento. Por favor, use o botão “Falar por WhatsApp”.", true);
+      setStatus(`Formulário indisponível no momento. Por favor, use o botão “${CONFIG.CTA_SECONDARY}”.`, true);
       return;
     }
 
     if (!CONFIG.FORM_TOKEN) {
-      setStatus("Formulário indisponível no momento. Por favor, use o botão “Falar por WhatsApp”.", true);
+      setStatus(`Formulário indisponível no momento. Por favor, use o botão “${CONFIG.CTA_SECONDARY}”.`, true);
       return;
     }
 

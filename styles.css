@@ -15,6 +15,8 @@
   --shadow-soft: 0 18px 40px rgba(12, 16, 30, 0.25);
   --radius: 18px;
   --radius-lg: 26px;
+  --font-sans: "Sora", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-serif: "Playfair Display", ui-serif, "Georgia", serif;
 }
 
 * {
@@ -27,14 +29,30 @@ html {
 
 body {
   margin: 0;
-  font-family: "Sora", "Manrope", sans-serif;
+  font-family: var(--font-sans);
   background: var(--brand-blue);
   color: var(--text-on-dark);
   line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 p {
   margin: 0 0 16px;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+h1,
+h2 {
+  text-wrap: balance;
 }
 
 img {
@@ -81,13 +99,13 @@ a {
   align-items: center;
   justify-content: space-between;
   gap: 20px;
-  padding: 20px 0;
+  padding: 16px 0;
 }
 
 .logo img {
-  height: clamp(64px, 7vw, 96px);
+  height: clamp(72px, 8vw, 112px);
   width: auto;
-  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.35));
+  filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.3));
 }
 
 .nav {
@@ -175,16 +193,16 @@ a {
 
 .hero {
   position: relative;
-  padding: 90px 0 80px;
+  padding: clamp(84px, 10vw, 120px) 0 clamp(70px, 8vw, 96px);
   overflow: hidden;
   background: linear-gradient(120deg, rgba(43, 52, 95, 0.98), rgba(27, 33, 58, 0.92));
 }
 
 .hero-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  align-items: center;
-  gap: 48px;
+  grid-template-columns: 1.1fr 0.9fr;
+  align-items: start;
+  gap: clamp(32px, 6vw, 56px);
 }
 
 .hero-copy h1 {
@@ -205,6 +223,7 @@ a {
   font-size: 1.1rem;
   color: var(--muted-on-dark);
   max-width: 520px;
+  line-height: 1.7;
 }
 
 .hero-ctas {
@@ -237,6 +256,54 @@ a {
   border-radius: var(--radius-lg);
   padding: 28px;
   box-shadow: var(--shadow-soft);
+}
+
+.hero-aside {
+  display: grid;
+  gap: 18px;
+  align-content: start;
+}
+
+.hero-portrait {
+  position: relative;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid rgba(183, 154, 90, 0.22);
+  box-shadow: var(--shadow-soft);
+  background: rgba(244, 241, 237, 0.04);
+}
+
+.hero-portrait img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  object-position: 50% 15%;
+  display: block;
+  filter: saturate(0.92) contrast(1.06);
+}
+
+.hero-portrait-sheen {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 10% 0%, rgba(183, 154, 90, 0.22), transparent 55%),
+    linear-gradient(180deg, rgba(27, 33, 58, 0.05), rgba(27, 33, 58, 0.55));
+  pointer-events: none;
+}
+
+.hero-portrait-caption {
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 14px;
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(183, 154, 90, 0.28);
+  background: rgba(27, 33, 58, 0.62);
+  color: var(--text-on-dark);
+  font-size: 0.95rem;
+  backdrop-filter: blur(12px);
 }
 
 .hero-card ul {
@@ -286,16 +353,18 @@ a {
 }
 
 .section {
-  padding: 90px 0;
+  padding: clamp(72px, 8vw, 104px) 0;
   scroll-margin-top: 120px;
 }
 
 .section-dark {
-  background: var(--surface-dark);
+  background: radial-gradient(circle at 20% -10%, rgba(183, 154, 90, 0.08), transparent 55%),
+    var(--surface-dark);
 }
 
 .section-light {
-  background: var(--surface-light);
+  background: radial-gradient(circle at 20% -10%, rgba(183, 154, 90, 0.14), transparent 60%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.92), var(--surface-light));
   color: var(--text-on-light);
 }
 
@@ -308,7 +377,7 @@ a {
 
 .section h2 {
   font-size: clamp(1.8rem, 3vw, 2.6rem);
-  margin: 0 0 24px;
+  margin: 0 0 18px;
 }
 
 .section h3 {
@@ -318,12 +387,92 @@ a {
 .authority {
   display: grid;
   gap: 36px;
+  grid-template-columns: 1.05fr 0.95fr;
+  align-items: start;
+}
+
+.authority-bio p strong {
+  color: var(--text-on-dark);
+}
+
+.authority-profile {
+  margin-top: 18px;
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+
+.headshot {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 1px solid rgba(183, 154, 90, 0.3);
+  background: rgba(255, 255, 255, 0.04);
+  flex: 0 0 auto;
+}
+
+.headshot img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 .authority-list {
   display: grid;
   gap: 24px;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.experience-grid {
+  display: grid;
+  gap: 36px;
+  grid-template-columns: 0.95fr 1.05fr;
+  align-items: start;
+}
+
+.experience-media {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid rgba(26, 31, 43, 0.12);
+  box-shadow: 0 12px 24px rgba(20, 24, 40, 0.08);
+  background: #fff;
+}
+
+.experience-media img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  object-position: 50% 35%;
+  display: block;
+  filter: saturate(0.96) contrast(1.04);
+}
+
+.experience-content .hero-card {
+  margin-top: 18px;
+}
+
+.mini-card {
+  padding: 22px;
+  border: 1px solid var(--border-dark);
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.03);
+  transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+}
+
+.mini-card h3 {
+  margin: 0 0 14px;
+}
+
+.mini-card .muted {
+  color: var(--muted-on-dark);
+  margin: 12px 0 0;
+}
+
+.mini-card p {
+  margin: 0;
 }
 
 .two-col {
@@ -382,6 +531,7 @@ a {
   border: 1px solid var(--border-dark);
   border-radius: var(--radius);
   background: rgba(255, 255, 255, 0.02);
+  transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
 }
 
 .step-icon {
@@ -412,6 +562,11 @@ a {
   flex-wrap: wrap;
 }
 
+.section-head p {
+  margin: 0;
+  max-width: 520px;
+}
+
 .procedures {
   display: grid;
   gap: 24px;
@@ -427,6 +582,7 @@ a {
   box-shadow: 0 10px 24px rgba(20, 24, 40, 0.08);
   display: grid;
   gap: 16px;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
 }
 
 .procedure-card h3 {
@@ -538,6 +694,7 @@ a {
   background: #fff;
   padding: 28px;
   border-radius: var(--radius);
+  border: 1px solid rgba(26, 31, 43, 0.12);
   box-shadow: 0 18px 30px rgba(20, 24, 40, 0.12);
   color: var(--text-on-light);
 }
@@ -548,7 +705,15 @@ a {
   margin-bottom: 16px;
 }
 
-input,
+.lead-form .field label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(26, 31, 43, 0.72);
+}
+
+input:not([type="checkbox"]):not([type="radio"]),
 select,
 textarea {
   font-family: inherit;
@@ -563,6 +728,22 @@ textarea {
 
 }
 
+input::placeholder,
+textarea::placeholder {
+  color: rgba(26, 31, 43, 0.45);
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+  width: auto;
+  max-width: none;
+  min-width: auto;
+  padding: 0;
+  border-radius: 6px;
+  border: 1px solid rgba(26, 31, 43, 0.28);
+  accent-color: var(--brand-gold);
+}
+
 input:focus,
 select:focus,
 textarea:focus {
@@ -572,15 +753,28 @@ textarea:focus {
 
 .checkbox {
   display: flex;
-  gap: 10px;
-  align-items: flex-start;
+  gap: 8px;
+  align-items: center;
   font-size: 0.9rem;
   color: var(--muted-on-light);
   margin: 14px 0 20px;
 }
 
 .checkbox input {
-  margin-top: 4px;
+  margin: 0;
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+  cursor: pointer;
+}
+
+.checkbox span {
+  line-height: 1.45;
+}
+
+.checkbox a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 .form-status {
@@ -714,13 +908,45 @@ textarea:focus {
   transform: translateY(0);
 }
 
+@media (hover: hover) and (pointer: fine) {
+  .procedure-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(26, 31, 43, 0.22);
+    box-shadow: 0 14px 34px rgba(20, 24, 40, 0.12);
+  }
+
+  .mini-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(183, 154, 90, 0.38);
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .step-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(183, 154, 90, 0.38);
+    background: rgba(255, 255, 255, 0.03);
+  }
+}
+
 @media (max-width: 900px) {
+  .hero-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .authority {
+    grid-template-columns: 1fr;
+  }
+
+  .experience-grid {
+    grid-template-columns: 1fr;
+  }
+
   .nav {
     display: none;
   }
 
   .logo img {
-    height: 52px;
+    height: 60px;
   }
 
   .footer-cta {

@@ -15,12 +15,16 @@ Construir uma landing page premium (dark mode) para converter tráfego de alta i
 ### Uso
 - Hero: fundo azul profundo + tipografia branca + detalhes dourados.
 - Seções: alternar “fundo claro” com detalhes dourados ou manter dark em toda a página (preferível para coerência premium).
-- Evitar “efeito polishop”: CTAs discretos e microcopy de luxo (“Solicitar”, “Entrar em contato”).:contentReference[oaicite:4]{index=4}
+- Evitar “efeito polishop”: CTAs discretos e microcopy de luxo (“Solicitar”, “Entrar em contato”).
 
 ### Assets
 - Logos disponíveis na pasta do projeto (PNGs e LOGO.pdf). Preferir:
   - hero/header: logo versão para fundo escuro
   - footer: versão em fundo claro (se houver)
+
+### Fotografia (preferencial)
+- Usar fotos reais do Dr. (nunca stock): retrato sóbrio no hero, headshot na seção de autoridade e uma imagem de contexto (consultório/planejamento) para humanizar.
+- Tratamento: recortes limpos, contraste moderado, estética “hotelaria médica” (discreto, sem aparência de “site feito em casa”).
 
 ---
 
@@ -29,15 +33,16 @@ Construir uma landing page premium (dark mode) para converter tráfego de alta i
 “Cirurgia mamária com rigor reconstrutivo e foco em previsibilidade — para mulheres que não aceitam riscos desnecessários.”
 
 ### Diferencial “âncora”
-“Use a reconstrução como âncora de autoridade para vender estética complexa.”:contentReference[oaicite:5]{index=5}
+“Use a reconstrução como âncora de autoridade para vender estética complexa.”
 
 ### Narrativa-chave (mama)
 - Você NÃO é “colocador de prótese”; é **reconstrutor de mama**.
-- Mercado de “silicone simples” = guerra de preço; o high ticket de mama busca **segurança, longevidade e resolução de problemas**.:contentReference[oaicite:6]{index=6}
+- Mercado de “silicone simples” = guerra de preço; o high ticket de mama busca **segurança, longevidade e resolução de problemas**.
 
 ### Tom e linguagem (diretriz)
 - Tom técnico, intelectual e de autoridade, com foco em indicação individual, planejamento cirúrgico e previsibilidade.
 - Linguagem direta e precisa (menos “concierge/luxo suave”, mais clareza e critério).
+- Evitar termos fracos/genéricos (ex.: “técnica adequada”, “ambiente adequado”); preferir “rigor estrutural”, “refinamento técnico” e “visão reconstrutiva”.
 - Reforçar formação, credenciais e atuação em alta complexidade quando relevante.
 - Evitar frases que enfatizem “sem promessas” ou “não garantimos resultado”; manter isso implícito.
 
@@ -45,7 +50,7 @@ Construir uma landing page premium (dark mode) para converter tráfego de alta i
 
 ## 3) Público-alvo (ICP) — para quem é
 ### Perfil principal (mama)
-Mulheres 35–50 anos (frequentemente pós-maternidade) e/ou com histórico de cirurgias prévias (ptose recidivada, contratura, insatisfação), que querem “arrumar a bagunça” com alta competência técnica e previsibilidade.:contentReference[oaicite:7]{index=7}
+Mulheres 35–50 anos (frequentemente pós-maternidade) e/ou com histórico de cirurgias prévias (ptose recidivada, contratura, insatisfação), que querem “arrumar a bagunça” com alta competência técnica e previsibilidade.
 
 ### O que elas valorizam
 - Segurança e prudência (hospital, pernoite, previsibilidade)
@@ -67,7 +72,7 @@ Mulheres 35–50 anos (frequentemente pós-maternidade) e/ou com histórico de c
 - Revisão / Secondary breast surgery
 - Explante (quando aplicável; evita o termo como foco principal se sua estratégia atual é aumento/mastopexia, mas mantenha como prova de competência)
 
-> Produto “mama estruturada”: “Mastopexia com prótese (sutiã interno/alça muscular) e revisões.”:contentReference[oaicite:8]{index=8}
+> Produto “mama estruturada”: “Mastopexia com prótese (sutiã interno/alça muscular) e revisões.”
 
 ### Linha 2 — Porta de entrada (opcional, futura)
 - “Olhar cirúrgico” (blefaroplastia estruturada / ptose), como procedimento de entrada que pode elevar LTV.
@@ -95,8 +100,8 @@ Mulheres 35–50 anos (frequentemente pós-maternidade) e/ou com histórico de c
 ### Dobra 1 — HERO (impacto)
 - Headline com rigor técnico, precisão e previsibilidade
 - Subheadline com “indicação individual/planejamento cirúrgico/acompanhamento”
-- CTA: **“Solicitar agendamento”** (luxo = convite, não urgência).:contentReference[oaicite:9]{index=9}
-- Visual: dark premium, minimalista; sem fotos stock “mulher com fita métrica”.:contentReference[oaicite:10]{index=10}
+- CTA: **“Agendar primeira consulta”** (convite direto, sem urgência artificial).
+- Visual: dark premium, minimalista; sem fotos stock “mulher com fita métrica”.
 
 ### Dobra 2 — Autoridade (curta, objetiva)
 - Mini-bio + credenciais (UNICAMP, HC-USP/microcirurgia reconstrutiva) + áreas (mama)
@@ -104,7 +109,7 @@ Mulheres 35–50 anos (frequentemente pós-maternidade) e/ou com histórico de c
 
 ### Dobra 3 — Método (3 passos)
 - Avaliação e planejamento → Cirurgia → Acompanhamento
-- Ícones minimalistas dourados.:contentReference[oaicite:11]{index=11}
+- Ícones minimalistas dourados.
 
 ### Dobra 4 — Procedimentos (mama)
 - Cards: Aumento / Mastopexia / Revisão
@@ -116,43 +121,46 @@ Mulheres 35–50 anos (frequentemente pós-maternidade) e/ou com histórico de c
 - Incluir valor da primeira consulta: **R$ 1.200,00**
 
 ### Dobra final — CTA + Rodapé
-- CTA final: “Solicitar agendamento”
+- CTA final: “Agendar primeira consulta”
 - Rodapé com contato, localidade (Itaim Bibi, São Paulo – SP), links (privacy)
 
 ---
 
 ## 7) Microcopy de CTA (evitar “efeito Polishop”)
 - Evitar: “AGENDE AGORA”, “ÚLTIMAS VAGAS”, “COMPRE”
-- Preferir: “Solicitar agendamento”, “Entrar em contato com a equipe”, “Falar por WhatsApp”
+- Preferir: “Agendar primeira consulta”, “Falar com a equipe”
 - Design do CTA:
   - ghost button dourado (contorno fino) ou
   - dourado fosco sólido com tipografia sóbria
 - Quantidade:
-  - 2 CTAs estratégicos (hero + final) + links discretos no meio.:contentReference[oaicite:12]{index=12}
+  - 2 CTAs estratégicos (hero + final) + links discretos no meio.
 
 ---
 
 ## 8) Conteúdo (coerente com Instagram inicial + Ads)
 ### Estratégia base
 - Em vez de volume, criar 3 “masterpieces” que rodam em anúncios e no site por meses.:contentReference[oaicite:13]{index=13}
-- Estética sugerida: fundo azul petróleo, iluminação dramática, você falando como perito.:contentReference[oaicite:14]{index=14}
+- Em vez de volume, criar 3 “masterpieces” que rodam em anúncios e no site por meses.
+- Estética sugerida: fundo azul petróleo, iluminação dramática, você falando como perito.
 
 ### Masterpiece 1 (Home)
-Tema sugerido (adaptar para mama estética): “Por que um reconstrutor aplica o mesmo rigor na estética mamária?”:contentReference[oaicite:15]{index=15}
+Tema sugerido (adaptar para mama estética): “Por que um reconstrutor aplica o mesmo rigor na estética mamária?”
 
 ### Masterpiece 2 (mama)
 Substituir o tema “explante” por “Mastopexia/Aumento com previsibilidade e estrutura”.
 - Manter a lógica: “técnica e critérios” + “verdades duras” (sem agressividade).:contentReference[oaicite:16]{index=16}
+- Manter a lógica: “técnica e critérios” + “verdades duras” (sem agressividade).
 
 ### Reaproveitamento (cascata)
-- Grave horizontal (YouTube) → corte vertical (Reels) → legendar obrigatório (muita gente assiste sem som).:contentReference[oaicite:17]{index=17}
+- Grave horizontal (YouTube) → corte vertical (Reels) → legendar obrigatório (muita gente assiste sem som).
 
 ---
 
 ## 9) Experiência premium (opcional, operacional; não precisa estar na página)
 Se atendendo em coworking premium (ex.: Atria/B32), reduzir fricção percebida:
 - Camada de recepção humana (você ou concierge freelancer), para “mascarar” tablet/cadastro e elevar experiência VIP.:contentReference[oaicite:18]{index=18}
-- Nível freelancer: diária ~R$ 150–250 por 4h, se agrupar atendimentos.:contentReference[oaicite:19]{index=19}
+- Camada de recepção humana (você ou concierge freelancer), para “mascarar” tablet/cadastro e elevar experiência VIP.
+- Nível freelancer: diária ~R$ 150–250 por 4h, se agrupar atendimentos.
 
 ---
 
@@ -168,6 +176,6 @@ Se atendendo em coworking premium (ex.: Atria/B32), reduzir fricção percebida:
 - `WHATSAPP_PHONE_E164 = "5511952516867"`
 - `PRIMARY_FOCUS = ["Mamoplastia de aumento", "Mastopexia", "Cirurgia mamária secundária (revisões)"]`
 - `CITY = "Itaim Bibi, São Paulo – SP"`
-- `ADRESS = "Av. Brig. Faria Lima, 3900 - 7º andar - Itaim Bibi, São Paulo - SP"`
-- `CTA_PRIMARY = "Solicitar agendamento"`
-- `CTA_SECONDARY = "Falar por WhatsApp"`
+- `ADDRESS = "Av. Brig. Faria Lima, 3900 - 7º andar - Itaim Bibi, São Paulo - SP"`
+- `CTA_PRIMARY = "Agendar primeira consulta"`
+- `CTA_SECONDARY = "Falar com a equipe"`
