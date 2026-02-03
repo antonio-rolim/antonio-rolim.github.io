@@ -38,6 +38,10 @@ const CONFIG = {
       description: "Correção de complexidades, troca de implantes e refinamentos."
     },
     {
+      title: "Mamoplastia Redutora",
+      description: "Redução de volume mamário com planejamento técnico individualizado."
+    },
+    {
       title: "Reconstrução Mamária",
       description: "Restauração da forma e simetria pós-mastectomia."
     },
