@@ -179,3 +179,13 @@ Se atendendo em coworking premium (ex.: Atria/B32), reduzir fricção percebida:
 - `ADDRESS = "Av. Brig. Faria Lima, 3900 - 7º andar - Itaim Bibi, São Paulo - SP"`
 - `CTA_PRIMARY = "Agendar Consulta Médica"`
 - `CTA_SECONDARY = "Falar com a equipe"`
+
+
+## 12) Produção e medição (atualizado em 27/10/2026)
+- Fonte publicada: `antonio-rolim/antonio-rolim.github.io`, branch `main`, raiz.
+- Domínio canônico: `https://drantoniorolim.com.br/` (sem www).
+- Revisões mamárias têm card próprio no HTML.
+- Clique no WhatsApp e tentativa de formulário são eventos distintos de lead confirmado.
+- O endpoint Apps Script legado está mantido em `no-cors`; resposta opaca não comprova recebimento.
+- A confirmação e as conversões dependem do contrato externo descrito em `OPERATIONS.md`.
+- Preservar a branch de rollback `backup/pre-audit-fixes-2026-10-27`.

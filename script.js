@@ -17,10 +17,14 @@ const CONFIG = {
   // SUA URL do Google Apps Script (MANTIDA)
   FORM_ACTION_URL: "https://script.google.com/macros/s/AKfycbw484jckQ_oG27Y8FdCLhSNg5DWTCBqjSr_EZSV6QVixHQ2-URykaELF-JydABjaURjAQ/exec",
 
-  // SEU Token (MANTIDO)
+  // Identificador público do formulário; não é segredo nem substitui validação no servidor.
   FORM_TOKEN: "Adfifgjq3gnqiegnh0q#%!gwgmi4tg",
 
-  // Página de sucesso
+  // O endpoint legado retorna resposta opaca. Use "cors" apenas após validar
+  // o contrato documentado em OPERATIONS.md; nunca repita o POST automaticamente.
+  FORM_RESPONSE_MODE: "no-cors",
+
+  // Página de status do envio
   THANK_YOU_URL: "thank-you.html",
 
   // A LISTA DE PROCEDIMENTOS (Alinhada com o Posicionamento High Ticket)
@@ -60,7 +64,46 @@ const CONFIG = {
   ]
 };
 
-const whatsappRegex = /^(\+?55)?\s*(\(?\d{2}\)?)?\s*9?\d{4}[-\s]?\d{4}$/;
+// DDD válido e número brasileiro completo; aceita +55 e formatação habitual.
+const normalizeWhatsApp = (value) => {
+  if (/[^\d+()\s-]/.test(value) || (value.includes("+") && !/^\+55/.test(value.trim()))) return null;
+  let digits = value.replace(/\D/g, "");
+  if ((digits.length === 12 || digits.length === 13) && digits.startsWith("55")) digits = digits.slice(2);
+  const ddds = new Set("11 12 13 14 15 16 17 18 19 21 22 24 27 28 31 32 33 34 35 37 38 41 42 43 44 45 46 47 48 49 51 53 54 55 61 62 63 64 65 66 67 68 69 71 73 74 75 77 79 81 82 83 84 85 86 87 88 89 91 92 93 94 95 96 97 98 99".split(" "));
+  if (!ddds.has(digits.slice(0, 2))) return null;
+  if (!/^(?:[1-9]\d[2-5]\d{7}|[1-9]\d9\d{8})$/.test(digits)) return null;
+  if (/^(\d)\1+$/.test(digits.slice(2))) return null;
+  return `55${digits}`;
+};
+
+const storage = {
+  read(key, persistent = false) {
+    try { return JSON.parse((persistent ? localStorage : sessionStorage).getItem(key)); } catch { return null; }
+  },
+  write(key, value, persistent = false) {
+    try { (persistent ? localStorage : sessionStorage).setItem(key, JSON.stringify(value)); return true; } catch { return false; }
+  },
+};
+const createRequestId = () => typeof crypto.randomUUID === "function" ? crypto.randomUUID() :
+  Array.from(crypto.getRandomValues(new Uint8Array(16)), (v) => v.toString(16).padStart(2, "0")).join("");
+const track = (name, params = {}) => {
+  // Allowlist only: no patient information, procedure, free text or WhatsApp URL.
+  const safe = {};
+  if (params.cta_position) safe.cta_position = params.cta_position;
+  if (typeof window.gtag === "function") window.gtag("event", name, safe);
+};
+const getAttribution = () => {
+  const params = new URLSearchParams(window.location.search);
+  const campaign = {};
+  for (const key of ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term", "gclid", "gbraid", "wbraid", "fbclid"]) {
+    const value = params.get(key);
+    if (value) campaign[key] = value.slice(0, 250);
+  }
+  // Campaign details stay in this tab and go only to the contact endpoint.
+  const first = storage.read("rolim_attribution");
+  if (!first && Object.keys(campaign).length) storage.write("rolim_attribution", campaign);
+  return { ...(first || {}), ...campaign };
+};
 
 const buildWhatsAppLink = (message) => {
   const encoded = encodeURIComponent(message);
@@ -107,6 +150,7 @@ const initProcedureSelect = () => {
   const select = document.getElementById("interesse");
   if (!select) return;
 
+  if (select.options.length > 1) return;
   select.innerHTML = "";
 
   const opt0 = document.createElement("option");
@@ -163,9 +207,18 @@ const initWhatsAppLinks = () => {
     if (customMessage) {
       message = `Olá, vim pelo site e gostaria de agendar uma consulta médica sobre ${customMessage} com o Dr. Antônio Rolim.`;
     }
-    link.setAttribute("href", buildWhatsAppLink(message));
+    link.setAttribute("href", `https://wa.me/${CONFIG.WHATSAPP_PHONE_E164}`);
     link.setAttribute("target", "_blank");
-    link.setAttribute("rel", "noopener");
+    link.setAttribute("rel", "noopener noreferrer");
+    link.addEventListener("click", (event) => {
+      track("whatsapp_click", { cta_position: link.getAttribute("data-cta-position") || "other" });
+      // Keep link_url free of text/procedure data for automatic outbound tracking.
+      // Modified clicks retain a working, clean native WhatsApp link.
+      if (event.button === 0 && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey) {
+        event.preventDefault();
+        window.location.assign(buildWhatsAppLink(message));
+      }
+    });
   });
 };
 
@@ -181,175 +234,153 @@ const setupAccordion = () => {
 };
 
 const setupReveal = () => {
-  const elements = document.querySelectorAll(".reveal");
-  if (!("IntersectionObserver" in window)) {
-    elements.forEach((el) => el.classList.add("is-visible"));
-    return;
-  }
-
-  const observer = new IntersectionObserver(
-    (entries) => {
+  // Content is visible by default, including if this enhancement fails.
+  if (!("IntersectionObserver" in window) || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  let observer;
+  try {
+    observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
           entry.target.classList.add("is-visible");
           observer.unobserve(entry.target);
         }
       });
-    },
-    { threshold: 0.2 }
-  );
-
-  elements.forEach((el) => observer.observe(el));
-};
-
-const tryCopyToClipboard = async (text) => {
-  try {
-    if (!navigator.clipboard) return false;
-    await navigator.clipboard.writeText(text);
-    return true;
+    }, { threshold: 0.2 });
+    document.querySelectorAll(".reveal").forEach((el) => {
+      el.classList.add("reveal-enhanced");
+      observer.observe(el);
+    });
   } catch {
-    return false;
+    document.querySelectorAll(".reveal-enhanced").forEach((el) => el.classList.remove("reveal-enhanced"));
+    if (observer) observer.disconnect();
   }
 };
 
-const buildPayload = (form) => {
-  return {
-    token: CONFIG.FORM_TOKEN || "",
-    nome: form.nome.value.trim(),
-    whatsapp: form.whatsapp.value.trim(),
-    email: form.email.value.trim(),
-    interesse: form.interesse && form.interesse.value ? form.interesse.value : "",
-    mensagem: form.mensagem.value.trim(),
-    consentimento: form.consentimento.checked ? "1" : "0",
-    page_url: window.location.href,
-    submitted_at: new Date().toISOString(),
-    website: "", // honeypot (deve ficar vazio)
-  };
-};
+const buildPayload = (form, requestId) => ({
+  token: CONFIG.FORM_TOKEN || "",
+  request_id: requestId,
+  nome: form.nome.value.trim(),
+  whatsapp: normalizeWhatsApp(form.whatsapp.value.trim()),
+  email: form.email.value.trim(),
+  interesse: form.interesse.value || "",
+  mensagem: form.mensagem.value.trim(),
+  consentimento: form.consentimento.checked ? "1" : "0",
+  privacy_version: "2026-10-27",
+  page_url: `${window.location.origin}${window.location.pathname}`,
+  submitted_at: new Date().toISOString(),
+  website: form.querySelector('[name="website"]').value,
+  ...getAttribution(),
+});
 
-const payloadToUrlEncoded = (payload) => {
-  const params = new URLSearchParams();
-  Object.entries(payload).forEach(([k, v]) => params.append(k, v ?? ""));
-  return params.toString();
-};
-
-const sendViaBeaconOrFetch = async (payload) => {
-  const url = CONFIG.FORM_ACTION_URL;
-
-  // 1) Tenta sendBeacon (fire-and-forget; bom para navegar em seguida)
+const sendLead = async (payload) => {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 15000);
   try {
-    if (navigator.sendBeacon) {
-      const body = payloadToUrlEncoded(payload);
-      const blob = new Blob([body], { type: "application/x-www-form-urlencoded;charset=UTF-8" });
-      const ok = navigator.sendBeacon(url, blob);
-      if (ok) return true;
+    // One POST per attempt. A CORS/timeout failure can occur after persistence;
+    // never silently retry through a second transport.
+    const response = await fetch(CONFIG.FORM_ACTION_URL, {
+      method: "POST", mode: CONFIG.FORM_RESPONSE_MODE,
+      headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
+      body: new URLSearchParams(payload).toString(), signal: controller.signal,
+    });
+    if (response.type === "opaque") return { status: "unconfirmed" };
+    if (!response.ok) throw new Error("delivery_unconfirmed");
+    const result = await response.json();
+    if (result.ok !== true || result.persisted !== true || result.request_id !== payload.request_id ||
+        typeof result.lead_id !== "string" || !result.lead_id || result.lead_id.length > 128) {
+      throw new Error("delivery_unconfirmed");
     }
-  } catch {
-    // ignora e tenta fetch
-  }
-
-  // 2) Fallback: fetch no-cors + keepalive (não lemos resposta; objetivo é entregar o POST)
-  const body = payloadToUrlEncoded(payload);
-
-  await fetch(url, {
-    method: "POST",
-    mode: "no-cors",
-    keepalive: true,
-    headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
-    body,
-  });
-
-  return true;
+    return { status: "confirmed", lead_id: result.lead_id };
+  } finally { clearTimeout(timer); }
 };
 
 const setupForm = () => {
   const form = document.getElementById("lead-form");
   if (!form) return;
-
+  form.noValidate = true; // Custom accessible errors; native validation remains available without JS.
   const status = form.querySelector(".form-status");
   const submitBtn = form.querySelector('button[type="submit"]');
-
-  const setStatus = (message, isError = false) => {
+  let submitting = false;
+  let requestId = null;
+  const showStatus = (message, error = false) => {
     status.textContent = message;
-    status.style.color = isError ? "#b34b3c" : "";
+    status.style.color = error ? "#9d392c" : "";
   };
-
+  const invalid = (field, message) => {
+    field.setAttribute("aria-invalid", "true");
+    field.setAttribute("aria-describedby", "form-status");
+    const details = field.closest("details");
+    if (details) details.open = true;
+    field.focus();
+    showStatus(message, true);
+  };
+  form.addEventListener("input", () => { if (!submitting) requestId = null; });
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
-
-    const nome = form.nome.value.trim();
-    const whatsapp = form.whatsapp.value.trim();
-    const consent = form.consentimento.checked;
-
+    if (submitting) return;
     form.querySelectorAll("[aria-invalid]").forEach((el) => el.removeAttribute("aria-invalid"));
-
-    if (!nome) {
-      form.nome.setAttribute("aria-invalid", "true");
-      setStatus("Informe seu nome.", true);
-      return;
-    }
-
-    if (!whatsapp || !whatsappRegex.test(whatsapp)) {
-      form.whatsapp.setAttribute("aria-invalid", "true");
-      setStatus("Informe um WhatsApp válido.", true);
-      return;
-    }
-
-    if (!consent) {
-      form.consentimento.setAttribute("aria-invalid", "true");
-      setStatus("É necessário concordar com a política de privacidade.", true);
-      return;
-    }
-
-    if (!CONFIG.FORM_ACTION_URL || CONFIG.FORM_ACTION_URL === "FORM_ACTION_URL") {
-      setStatus(`Formulário indisponível no momento. Por favor, use o botão “${CONFIG.CTA_SECONDARY}”.`, true);
-      return;
-    }
-
-    if (!CONFIG.FORM_TOKEN) {
-      setStatus(`Formulário indisponível no momento. Por favor, use o botão “${CONFIG.CTA_SECONDARY}”.`, true);
-      return;
-    }
-
-    setStatus("Enviando…");
-    if (submitBtn) submitBtn.disabled = true;
-
-    const payload = buildPayload(form);
-
+    if (form.querySelector('[name="website"]').value) { showStatus("Não foi possível enviar. Fale com a equipe pelo WhatsApp.", true); return; }
+    if (!form.nome.value.trim()) return invalid(form.nome, "Informe seu nome.");
+    if (!normalizeWhatsApp(form.whatsapp.value.trim())) return invalid(form.whatsapp, "Informe um WhatsApp completo, incluindo o DDD.");
+    if (form.email.value.trim() && !form.email.validity.valid) return invalid(form.email, "Confira o endereço de e-mail informado.");
+    if (!form.consentimento.checked) return invalid(form.consentimento, "É necessário ler e concordar com a política de privacidade.");
+    if (!CONFIG.FORM_ACTION_URL || !CONFIG.FORM_TOKEN) { showStatus("Formulário indisponível. Fale com a equipe pelo WhatsApp.", true); return; }
+    submitting = true;
+    submitBtn.disabled = true;
+    form.setAttribute("aria-busy", "true");
+    showStatus("Enviando sua solicitação…");
+    requestId = requestId || createRequestId();
+    const payload = buildPayload(form, requestId);
+    track("form_submit_attempt");
     try {
-      await sendViaBeaconOrFetch(payload);
-
-      // Mantém o usuário no seu domínio: redireciona diretamente para a sua thank-you.
-      window.location.href = CONFIG.THANK_YOU_URL;
-    } catch (err) {
-      // Falha real (ex.: offline). Mostra fallback sem abrir WhatsApp.
-      const fallbackLines = [
-        `Solicitação de contato — ${CONFIG.CTA_PRIMARY}`,
-        `Nome: ${payload.nome}`,
-        `WhatsApp: ${payload.whatsapp}`,
-        payload.interesse ? `Procedimento: ${payload.interesse}` : null,
-        payload.email ? `E-mail: ${payload.email}` : null,
-        payload.mensagem ? `Mensagem: ${payload.mensagem}` : null,
-        `URL: ${payload.page_url}`,
-        `Data/Hora: ${payload.submitted_at}`,
-      ].filter(Boolean);
-
-      const fallbackMessage = fallbackLines.join("\n");
-      const copied = await tryCopyToClipboard(fallbackMessage);
-
-      setStatus(
-        copied
-          ? "Não foi possível enviar agora. Copiamos os dados para a área de transferência."
-          : "Não foi possível enviar agora. Por favor, tente novamente em instantes.",
-        true
-      );
-
-      if (submitBtn) submitBtn.disabled = false;
+      const result = await sendLead(payload);
+      const receipt = { ...result, request_id: requestId, submitted_at: Date.now() };
+      // Store receipt metadata only; never store name, contact details or history.
+      if (storage.write("rolim_submission", receipt)) {
+        window.location.assign(CONFIG.THANK_YOU_URL);
+      } else {
+        showStatus(result.status === "confirmed" ? "Solicitação recebida. A equipe entrará em contato." :
+          "Sua solicitação foi enviada, mas o recebimento ainda não foi confirmado. Confirme com a equipe pelo WhatsApp abaixo.");
+      }
+    } catch {
+      showStatus("Não foi possível confirmar o recebimento. Para evitar um envio duplicado, confirme com a equipe pelo WhatsApp abaixo.", true);
+      track("form_submit_error");
+    } finally {
+      submitting = false;
+      submitBtn.disabled = false;
+      form.removeAttribute("aria-busy");
     }
   });
 };
 
+const setupSubmissionStatus = () => {
+  const heading = document.querySelector("[data-submission-heading]");
+  if (!heading) return;
+  const text = document.querySelector("[data-submission-text]");
+  const receipt = storage.read("rolim_submission");
+  if (!receipt || !Number.isFinite(receipt.submitted_at) || Date.now() - receipt.submitted_at > 30 * 60 * 1000 ||
+      receipt.submitted_at > Date.now() || typeof receipt.request_id !== "string") return;
+  if (receipt.status !== "confirmed") {
+    heading.textContent = "Confirme sua solicitação";
+    text.textContent = "Sua solicitação foi enviada, mas o recebimento ainda não foi confirmado. Fale com a equipe pelo WhatsApp para confirmar seu contato.";
+    return;
+  }
+  if (typeof receipt.lead_id !== "string" || !receipt.lead_id || receipt.lead_id.length > 128) return;
+  heading.textContent = "Solicitação recebida";
+  text.textContent = "Seu contato foi registrado. A equipe entrará em contato via WhatsApp para organizar o agendamento.";
+  const marker = `rolim_conversion_${receipt.request_id}`;
+  if (storage.read(marker) || typeof window.gtag !== "function") return;
+  // Reserve before dispatch: fail closed if storage is unavailable.
+  if (!storage.write(marker, true)) return;
+  track("generate_lead");
+  window.gtag("event", "conversion", {
+    send_to: "AW-18046419710/EJBqCPzbjZIcEP6Fmp1D",
+    transaction_id: receipt.lead_id,
+  });
+};
+
 document.addEventListener("DOMContentLoaded", () => {
+  getAttribution();
   initConfigText();
   initProcedures();
   initProcedureSelect();
@@ -358,4 +389,5 @@ document.addEventListener("DOMContentLoaded", () => {
   setupAccordion();
   setupReveal();
   setupForm();
+  setupSubmissionStatus();
 });

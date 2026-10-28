@@ -1007,13 +1007,13 @@ textarea:focus {
   display: block;
 }
 
-.reveal {
+.reveal.reveal-enhanced {
   opacity: 0;
   transform: translateY(18px);
   transition: opacity 0.6s ease, transform 0.6s ease;
 }
 
-.reveal.is-visible {
+.reveal.reveal-enhanced.is-visible {
   opacity: 1;
   transform: translateY(0);
 }
@@ -1101,4 +1101,17 @@ textarea:focus {
     opacity: 1;
     transform: none;
   }
+}
+
+/* Form feedback and progressive enhancement */
+.form-honeypot { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); }
+.form-help { font-size:.9rem; margin-top:16px; }
+.form-help a, .privacy-content a { text-decoration:underline; text-underline-offset:3px; }
+[aria-invalid="true"] { border-color:#9d392c; }
+button:disabled { cursor:wait; opacity:.7; }
+.status-logo { width:180px; height:auto; margin:0 auto 2rem; }
+.status-actions { display:flex; flex-direction:column; gap:1rem; align-items:center; margin:2rem 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal.reveal-enhanced { opacity:1; transform:none; transition:none; }
 }
