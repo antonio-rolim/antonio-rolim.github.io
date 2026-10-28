@@ -67,5 +67,6 @@ test('JSON and URL-encoded request bodies are supported',()=>{
 
 
 test('long valid name and interest fit the Gmail subject limit',()=>{
- const f=fixture();assert.equal(f.post({...valid(),nome:'N'.repeat(120),interesse:'I'.repeat(160)}).accepted,true);assert.equal(Array.from(f.calls[0][1]).length,250);
+ const f=fixture();assert.equal(f.post({...valid(),nome:'N'.repeat(120),interesse:'I'.repeat(160)}).accepted,true);assert.equal(f.calls[0][1].length,250);
+ const emoji=fixture();assert.equal(emoji.post({...valid(),nome:'😀'.repeat(60),interesse:'😀'.repeat(80)}).accepted,true);assert.ok(emoji.calls[0][1].length<=250);assert.doesNotMatch(emoji.calls[0][1],/[\uD800-\uDBFF]$/);
 });
