@@ -20,9 +20,10 @@ const CONFIG = {
   // Identificador público do formulário; não é segredo nem substitui validação no servidor.
   FORM_TOKEN: "Adfifgjq3gnqiegnh0q#%!gwgmi4tg",
 
-  // O endpoint legado retorna resposta opaca. Use "cors" apenas após validar
-  // o contrato documentado em OPERATIONS.md; nunca repita o POST automaticamente.
+  // Um único POST. O recibo técnico é consultado por GET, sem dados pessoais.
+  // Compatível com o endpoint antigo: sem recibo, mantém status não confirmado.
   FORM_RESPONSE_MODE: "no-cors",
+  FORM_RECEIPTS: true,
 
   // Página de status do envio
   THANK_YOU_URL: "thank-you.html",
@@ -86,6 +87,7 @@ const storage = {
 };
 const createRequestId = () => typeof crypto.randomUUID === "function" ? crypto.randomUUID() :
   Array.from(crypto.getRandomValues(new Uint8Array(16)), (v) => v.toString(16).padStart(2, "0")).join("");
+const createReceiptKey = () => Array.from(crypto.getRandomValues(new Uint8Array(32)), (v) => v.toString(16).padStart(2, "0")).join("");
 const track = (name, params = {}) => {
   // Allowlist only: no patient information, procedure, free text or WhatsApp URL.
   const safe = {};
@@ -256,9 +258,10 @@ const setupReveal = () => {
   }
 };
 
-const buildPayload = (form, requestId) => ({
+const buildPayload = (form, requestId, receiptKey) => ({
   token: CONFIG.FORM_TOKEN || "",
   request_id: requestId,
+  receipt_key: receiptKey,
   nome: form.nome.value.trim(),
   whatsapp: normalizeWhatsApp(form.whatsapp.value.trim()),
   email: form.email.value.trim(),
@@ -272,26 +275,54 @@ const buildPayload = (form, requestId) => ({
   ...getAttribution(),
 });
 
+const readReceipt = (payload) => new Promise((resolve) => {
+  if (!CONFIG.FORM_RECEIPTS) { resolve(null); return; }
+  const callback = `rolimReceipt_${createReceiptKey().slice(0, 24)}`;
+  const script = document.createElement("script");
+  const url = new URL(CONFIG.FORM_ACTION_URL);
+  url.search = new URLSearchParams({ action: "receipt", request_id: payload.request_id,
+    receipt_key: payload.receipt_key, callback }).toString();
+  let timer;
+  let finished = false;
+  const finish = (result) => {
+    if (finished) return;
+    finished = true;
+    clearTimeout(timer);
+    script.remove();
+    delete window[callback];
+    resolve(result);
+  };
+  window[callback] = (result) => finish(result);
+  script.onerror = () => finish(null);
+  script.referrerPolicy = "no-referrer";
+  script.src = url.href;
+  timer = setTimeout(() => finish(null), 6000);
+  document.head.appendChild(script);
+});
+
+const isAcceptedReceipt = (result, requestId) => !!result && result.protocol === "rolim-email-receipt-v1" &&
+  result.ok === true && result.accepted === true && result.receipt_saved === true &&
+  result.notification_status === "accepted" && result.request_id === requestId &&
+  typeof result.lead_id === "string" && !!result.lead_id && result.lead_id.length <= 128;
+
 const sendLead = async (payload) => {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 15000);
+  let response;
   try {
-    // One POST per attempt. A CORS/timeout failure can occur after persistence;
-    // never silently retry through a second transport.
-    const response = await fetch(CONFIG.FORM_ACTION_URL, {
+    // Exactly one POST. A failed confirmation must never trigger another email.
+    response = await fetch(CONFIG.FORM_ACTION_URL, {
       method: "POST", mode: CONFIG.FORM_RESPONSE_MODE,
       headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
       body: new URLSearchParams(payload).toString(), signal: controller.signal,
     });
-    if (response.type === "opaque") return { status: "unconfirmed" };
-    if (!response.ok) throw new Error("delivery_unconfirmed");
-    const result = await response.json();
-    if (result.ok !== true || result.persisted !== true || result.request_id !== payload.request_id ||
-        typeof result.lead_id !== "string" || !result.lead_id || result.lead_id.length > 128) {
-      throw new Error("delivery_unconfirmed");
-    }
-    return { status: "confirmed", lead_id: result.lead_id };
   } finally { clearTimeout(timer); }
+  if (response.type !== "opaque" && !response.ok) throw new Error("delivery_unconfirmed");
+  // JSONP is used only for a read-only technical receipt protected by a unique
+  // 256-bit key. Patient fields are sent solely in the original POST body.
+  const result = response.type === "opaque" ? await readReceipt(payload) : await response.json();
+  return isAcceptedReceipt(result, payload.request_id) ?
+    { status: "confirmed", lead_id: result.lead_id } : { status: "unconfirmed" };
 };
 
 const setupForm = () => {
@@ -302,6 +333,7 @@ const setupForm = () => {
   const submitBtn = form.querySelector('button[type="submit"]');
   let submitting = false;
   let requestId = null;
+  let receiptKey = null;
   const showStatus = (message, error = false) => {
     status.textContent = message;
     status.style.color = error ? "#9d392c" : "";
@@ -314,7 +346,7 @@ const setupForm = () => {
     field.focus();
     showStatus(message, true);
   };
-  form.addEventListener("input", () => { if (!submitting) requestId = null; });
+  form.addEventListener("input", () => { if (!submitting) { requestId = null; receiptKey = null; } });
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
     if (submitting) return;
@@ -330,7 +362,8 @@ const setupForm = () => {
     form.setAttribute("aria-busy", "true");
     showStatus("Enviando sua solicitação…");
     requestId = requestId || createRequestId();
-    const payload = buildPayload(form, requestId);
+    receiptKey = receiptKey || createReceiptKey();
+    const payload = buildPayload(form, requestId, receiptKey);
     track("form_submit_attempt");
     try {
       const result = await sendLead(payload);
@@ -339,7 +372,7 @@ const setupForm = () => {
       if (storage.write("rolim_submission", receipt)) {
         window.location.assign(CONFIG.THANK_YOU_URL);
       } else {
-        showStatus(result.status === "confirmed" ? "Solicitação recebida. A equipe entrará em contato." :
+        showStatus(result.status === "confirmed" ? "Solicitação encaminhada à equipe. Aguarde o retorno pelo WhatsApp." :
           "Sua solicitação foi enviada, mas o recebimento ainda não foi confirmado. Confirme com a equipe pelo WhatsApp abaixo.");
       }
     } catch {
@@ -366,8 +399,8 @@ const setupSubmissionStatus = () => {
     return;
   }
   if (typeof receipt.lead_id !== "string" || !receipt.lead_id || receipt.lead_id.length > 128) return;
-  heading.textContent = "Solicitação recebida";
-  text.textContent = "Seu contato foi registrado. A equipe entrará em contato via WhatsApp para organizar o agendamento.";
+  heading.textContent = "Solicitação encaminhada";
+  text.textContent = "Sua solicitação foi encaminhada por e-mail à equipe de atendimento. Aguarde o retorno pelo WhatsApp para organizar o agendamento.";
   const marker = `rolim_conversion_${receipt.request_id}`;
   if (storage.read(marker) || typeof window.gtag !== "function") return;
   // Reserve before dispatch: fail closed if storage is unavailable.

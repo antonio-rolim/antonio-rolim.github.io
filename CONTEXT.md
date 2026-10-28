@@ -186,6 +186,6 @@ Se atendendo em coworking premium (ex.: Atria/B32), reduzir fricção percebida:
 - Domínio canônico: `https://drantoniorolim.com.br/` (sem www).
 - Revisões mamárias têm card próprio no HTML.
 - Clique no WhatsApp e tentativa de formulário são eventos distintos de lead confirmado.
-- O endpoint Apps Script legado está mantido em `no-cors`; resposta opaca não comprova recebimento.
-- A confirmação e as conversões dependem do contrato externo descrito em `OPERATIONS.md`.
+- Um único POST em `no-cors` é seguido por consulta de recibo técnico somente de leitura (JSONP). O serviço legado continua não confirmado até atualizar o Apps Script.
+- A confirmação significa aceitação dos e-mails pelo Gmail, não entrega final ou leitura. Modelo, testes e instalação em `OPERATIONS.md`.
 - Preservar a branch de rollback `backup/pre-audit-fixes-2026-10-27`.

@@ -22,7 +22,7 @@ Requer Node.js 20 ou posterior, sem instalar dependências:
 ```bash
 node --check script.js
 node --check analytics.js
-node --test tests/site.test.cjs
+node --test tests/*.test.cjs
 git diff --check
 ```
 
@@ -34,10 +34,14 @@ Confira desktop e celular, links de WhatsApp, formulário, status e política. N
 O token do formulário é público (está no cliente); não é senha nem controle de acesso.
 O backend precisa validar os dados e limitar abuso independentemente desse valor.
 
-O endpoint legado usa `FORM_RESPONSE_MODE: "no-cors"`. Uma resposta opaca não prova gravação: o site mostra contato ainda não confirmado e oferece WhatsApp. O POST não é repetido automaticamente.
-A confirmação verificável exige a atualização do Apps Script descrita em `OPERATIONS.md`.
+O endpoint recebe um único POST em `no-cors`. O site consulta depois um recibo técnico por GET/JSONP, protegido por uma chave aleatória exclusiva de 256 bits. A consulta não contém dados pessoais e não envia e-mails.
+O backend atual precisa ser atualizado com `integrations/apps-script/Code.gs` (modelo configurável) ou com o arquivo privado pré-configurado entregue ao responsável pelo site.
+Enquanto o serviço antigo estiver instalado, a ausência de recibo mantém o status não confirmado. Não há reenvio automático do POST.
+O recibo confirma a aceitação dos e-mails pelo Gmail, não sua entrega final ou leitura, e não representa gravação de dados clínicos em planilha.
 
 ## Medição
+
+O modelo Apps Script no Git usa as propriedades `CONTACT_DESTINATIONS` e `FORM_TOKEN`; não publique a cópia privada pré-configurada neste repositório público.
 
 - `whatsapp_click`: clique, com posição do CTA, sem procedimento nem URL da conversa.
 - `form_submit_attempt`: tentativa validada de envio, não representa lead recebido.

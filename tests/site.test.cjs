@@ -9,7 +9,7 @@ function makeStorage(throwing=false) {
  const values=new Map();
  return {getItem:k=>{if(throwing)throw Error('blocked');return values.get(k)||null;},setItem:(k,v)=>{if(throwing)throw Error('blocked');values.set(k,v);}};
 }
-function fixture({response='opaque',storageBlocked=false,heading=false,fetchImpl}={}) {
+function fixture({response='opaque',storageBlocked=false,heading=false,fetchImpl,receipt='missing'}={}) {
  const events=[], requests=[], assignments=[];
  const field=value=>({value,validity:{valid:true},setAttribute(){},removeAttribute(){},closest:()=>({open:false}),focus(){this.focused=true;}});
  const status={textContent:'',style:{}},button={disabled:false};
@@ -24,9 +24,9 @@ function fixture({response='opaque',storageBlocked=false,heading=false,fetchImpl
   if(response==='network')throw Error('offline');
   if(response==='opaque')return {type:'opaque'};
   if(response==='http-error')return {type:'cors',ok:false};
-  return {type:'cors',ok:true,json:async()=>response==='confirmed'?{ok:true,persisted:true,request_id:p.get('request_id'),lead_id:'local-lead-id'}:response==='mismatch'?{ok:true,persisted:true,request_id:'other-id',lead_id:'local-lead-id'}:{ok:true}};
+  return {type:'cors',ok:true,json:async()=>response==='confirmed'?{protocol:'rolim-email-receipt-v1',ok:true,accepted:true,receipt_saved:true,notification_status:'accepted',request_id:p.get('request_id'),lead_id:'local-lead-id'}:response==='mismatch'?{protocol:'rolim-email-receipt-v1',ok:true,accepted:true,receipt_saved:true,notification_status:'accepted',request_id:'other-id',lead_id:'local-lead-id'}:{ok:true}};
  });
- const ctx=vm.createContext({document:{addEventListener(){},getElementById:()=>form,querySelector:s=>heading?(s==='[data-submission-heading]'?title:text):null},window:win,sessionStorage:ss,localStorage:ss,crypto:webcrypto,URLSearchParams,AbortController,setTimeout,clearTimeout,fetch:fetcher});
+ const ctx=vm.createContext({document:{addEventListener(){},getElementById:()=>form,querySelector:s=>heading?(s==='[data-submission-heading]'?title:text):null,createElement:()=>({remove(){}}),head:{appendChild:script=>{const u=new URL(script.src);if(receipt==='confirmed'){win[u.searchParams.get('callback')]({protocol:'rolim-email-receipt-v1',ok:true,accepted:true,receipt_saved:true,notification_status:'accepted',request_id:u.searchParams.get('request_id'),lead_id:'jsonp-lead'});}else script.onerror();}}},window:win,sessionStorage:ss,localStorage:ss,crypto:webcrypto,URL,URLSearchParams,AbortController,setTimeout,clearTimeout,fetch:fetcher});
  vm.runInContext(source,ctx);
  return {ctx,form,status,button,handlers,events,requests,assignments,ss,title,text,run:code=>vm.runInContext(code,ctx),submit:()=>handlers.submit({preventDefault(){}})};
 }
@@ -60,10 +60,10 @@ test('opaque transport stores unconfirmed metadata, never patient fields',async(
  const body=new URLSearchParams(f.requests[0].body);assert.equal(body.get('utm_source'),'google');assert.equal(body.get('page_url'),'https://drantoniorolim.com.br/');assert.equal(body.get('whatsapp'),'5511987654321');
 });
 
-test('server receipt requires persisted flag and matching request ID',async()=>{
+test('server receipt requires email acceptance, saved receipt and matching request ID',async()=>{
  for(const response of ['mismatch','partial','http-error']){
   const f=fixture({response});f.run('CONFIG.FORM_RESPONSE_MODE="cors";setupForm()');await f.submit();
-  assert.equal(f.assignments.length,0,response);assert.equal(f.ss.getItem('rolim_submission'),null);assert.match(f.status.textContent,/Não foi possível confirmar/);
+  if(response==='http-error'){assert.equal(f.assignments.length,0);assert.match(f.status.textContent,/Não foi possível confirmar/);}else{assert.equal(JSON.parse(f.ss.getItem('rolim_submission')).status,'unconfirmed');}
  }
  const f=fixture({response:'confirmed'});f.run('CONFIG.FORM_RESPONSE_MODE="cors";setupForm()');await f.submit();assert.equal(JSON.parse(f.ss.getItem('rolim_submission')).status,'confirmed');
 });
@@ -95,7 +95,7 @@ test('confirmed lead fires one Ads action with transaction ID; reload does not f
  f.run('setupSubmissionStatus();setupSubmissionStatus()');
  assert.equal(f.events.filter(x=>x[1]==='generate_lead').length,1);
  const ads=f.events.filter(x=>x[1]==='conversion');assert.equal(ads.length,1);assert.equal(ads[0][2].transaction_id,'lead-unique');
- assert.match(f.title.textContent,/recebida/);
+ assert.match(f.title.textContent,/encaminhada/);
 });
 
 test('tracking allowlist excludes patient data, procedure and URL',()=>{
@@ -122,4 +122,25 @@ test('analytics initialization is idempotent and uses a query-free page URL',()=
  const code=fs.readFileSync('analytics.js','utf8');vm.runInContext(code,c);vm.runInContext(code,c);
  assert.equal(scripts.length,1);const entries=c.window.dataLayer.map(x=>Array.from(x));assert.equal(entries.filter(x=>x[0]==='config'&&x[1]==='G-Q1984RXJFE').length,1);
  assert.equal(entries.find(x=>x[0]==='set')[1].page_location,'https://drantoniorolim.com.br/');
+});
+
+
+test('opaque POST is confirmed by a read-only receipt without another POST',async()=>{
+ const f=fixture({receipt:'confirmed'});f.run('setupForm()');await f.submit();assert.equal(f.requests.length,1);
+ const p=new URLSearchParams(f.requests[0].body);assert.match(p.get('receipt_key'),/^[a-f0-9]{64}$/);
+ const receipt=JSON.parse(f.ss.getItem('rolim_submission'));assert.equal(receipt.status,'confirmed');assert.equal(receipt.lead_id,'jsonp-lead');assert.equal('receipt_key' in receipt,false);
+});
+
+test('receipt lookup sends no patient fields and cleans up its callback',async()=>{
+ const f=fixture();let url;let removed=false;
+ f.ctx.document.head.appendChild=script=>{url=new URL(script.src);script.onerror();};
+ f.ctx.document.createElement=()=>({remove(){removed=true;}});
+ f.run('setupForm()');await f.submit();assert.deepEqual([...url.searchParams.keys()].sort(),['action','callback','receipt_key','request_id']);
+ assert.equal(f.ctx.window[url.searchParams.get('callback')],undefined);assert.equal(removed,true);
+});
+
+test('retry preserves both request identity and receipt key after network error',async()=>{
+ const f=fixture({response:'network'});f.run('setupForm()');await f.submit();await f.submit();
+ const a=new URLSearchParams(f.requests[0].body),b=new URLSearchParams(f.requests[1].body);
+ assert.equal(a.get('request_id'),b.get('request_id'));assert.equal(a.get('receipt_key'),b.get('receipt_key'));
 });
