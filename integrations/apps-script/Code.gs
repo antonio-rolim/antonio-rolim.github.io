@@ -51,7 +51,7 @@ function doPost(e) {
       // Persist intent before any email send. Storage failure aborts here.
       props.setProperty(property, JSON.stringify(receipt));
     }
-    const subject = "[LP " + requestId.slice(0, 8) + "] Lead — " + lead.nome + " — " + (lead.interesse || "não informado");
+    const subject = Array.from("[LP " + requestId.slice(0, 8) + "] Lead — " + lead.nome + " — " + (lead.interesse || "não informado")).slice(0, 250).join("");
     const lines = [
       "Nova solicitação pelo formulário da landing page", "",
       "Referência: " + receipt.lead_id,

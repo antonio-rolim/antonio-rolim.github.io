@@ -64,3 +64,8 @@ test('JSON and URL-encoded request bodies are supported',()=>{
   const f=fixture();assert.equal(JSON.parse(f.invoke('doPost',{postData:{contents:body}}).body).accepted,true);assert.equal(f.calls.length,2);
  }
 });
+
+
+test('long valid name and interest fit the Gmail subject limit',()=>{
+ const f=fixture();assert.equal(f.post({...valid(),nome:'N'.repeat(120),interesse:'I'.repeat(160)}).accepted,true);assert.equal(Array.from(f.calls[0][1]).length,250);
+});
